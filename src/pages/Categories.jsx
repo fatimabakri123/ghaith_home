@@ -6,7 +6,7 @@ function Categories() {
   const { language } = useLanguage();
 
   return (
-    <main className="categories-page">
+    <main>
 
       <div className="page-header">
 
@@ -39,6 +39,7 @@ function Categories() {
             />
 
             <div className="large-category-overlay">
+
               <h2>
                 {category.name[language]}
               </h2>
@@ -48,6 +49,7 @@ function Categories() {
                   ? "Explore"
                   : "اكتشفي القسم"}
               </span>
+
             </div>
 
           </Link>

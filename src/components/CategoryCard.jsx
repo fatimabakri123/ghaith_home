@@ -9,13 +9,10 @@ function CategoryCard({ category }) {
       to={`/category/${category.id}`}
       className="category-card"
     >
-      <img
-        src={category.image}
-        alt={category.name[language]}
-      />
-
       <div className="category-overlay">
-        <h3>{category.name[language]}</h3>
+        <h3>
+          {category.name[language]}
+        </h3>
       </div>
     </Link>
   );

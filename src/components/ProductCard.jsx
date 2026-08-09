@@ -3,41 +3,40 @@ import { useLanguage } from "../context/LanguageContext";
 
 function ProductCard({ product }) {
   const { language, t } = useLanguage();
-  const categoryNames = {
-  kitchen: {
-    en: "Kitchen",
-    ar: "المطبخ",
-  },
-  bedroom: {
-    en: "Bedroom",
-    ar: "غرفة النوم",
-  },
-  bathroom: {
-    en: "Bathroom",
-    ar: "الحمام",
-  },
-  "living-room": {
-    en: "Living Room",
-    ar: "غرفة الجلوس",
-  },
-  cleaning: {
-    en: "Cleaning",
-    ar: "التنظيف",
-  },
-  hospitality: {
-    en: "Hospitality",
-    ar: "الضيافة",
-  },
-};
+
+  const name =
+    language === "en"
+      ? product.name_en
+      : product.name_ar;
+
+  const description =
+    language === "en"
+      ? product.description_en
+      : product.description_ar;
+
+  const categoryName =
+    language === "en"
+      ? product.categories?.name_en
+      : product.categories?.name_ar;
 
   return (
     <div className="product-card">
 
+      {/* IMAGE */}
       <div className="product-image-container">
-        <img
-          src={product.image}
-          alt={product.name[language]}
-        />
+
+        {product.image_url ? (
+          <img
+            src={product.image_url}
+            alt={name}
+          />
+        ) : (
+          <div className="no-image">
+            {language === "en"
+              ? "No Image"
+              : "لا توجد صورة"}
+          </div>
+        )}
 
         {!product.available && (
           <span className="out-of-stock">
@@ -46,20 +45,25 @@ function ProductCard({ product }) {
               : "غير متوفر"}
           </span>
         )}
+
       </div>
 
+      {/* INFO */}
       <div className="product-info">
 
         <p className="product-category">
-         {categoryNames[product.category][language]}
+          {categoryName ||
+            (language === "en"
+              ? "Uncategorized"
+              : "بدون قسم")}
         </p>
 
         <h3>
-          {product.name[language]}
+          {name}
         </h3>
 
         <p className="product-description">
-          {product.description[language]}
+          {description}
         </p>
 
         <div className="product-bottom">

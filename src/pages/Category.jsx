@@ -1,15 +1,17 @@
-import { useParams } from "react-router-dom";
-import { useState } from "react";
 
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
-import products from "../data/products";
 import categories from "../data/categories";
 import ProductCard from "../components/ProductCard";
+import { supabase } from "../lib/supabase";
 
 function Category() {
   const { categoryId } = useParams();
-
   const { language } = useLanguage();
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedSubcategory, setSelectedSubcategory] =
     useState("all");
@@ -18,42 +20,196 @@ function Category() {
     (item) => item.id === categoryId
   );
 
-  const categoryProducts = products.filter(
-    (product) => product.category === categoryId
-  );
+  // ==========================================
+  // SUBCATEGORIES FOR EACH MAIN CATEGORY
+  // ==========================================
 
-  const subcategories = [
-    ...new Set(
-      categoryProducts.map(
-        (product) => product.subcategory
+  const categorySubcategories = {
+    kitchen: [
+      "cookware",
+      "dinnerware",
+      "storage",
+      "coffee",
+      "serving",
+    ],
+
+    bedroom: [
+      "bed-linen",
+      "storage",
+      "decor",
+    ],
+
+    bathroom: [
+      "towels",
+      "storage",
+      "decor",
+    ],
+
+    "living-room": [
+      "furniture",
+      "decor",
+      "storage",
+    ],
+
+    cleaning: [
+      "cleaning-tools",
+      "storage",
+    ],
+
+    hospitality: [
+      "serving",
+      "coffee",
+      "dinnerware",
+      "storage",
+    ],
+  };
+
+  // ==========================================
+  // FETCH PRODUCTS
+  // ==========================================
+
+  useEffect(() => {
+    if (category) {
+      fetchProducts();
+    }
+  }, [categoryId]);
+
+  async function fetchProducts() {
+    setLoading(true);
+
+    // ------------------------------------------
+    // Find matching Supabase category
+    // ------------------------------------------
+
+    const {
+      data: supabaseCategory,
+      error: categoryError,
+    } = await supabase
+      .from("categories")
+      .select("id, name_en, name_ar")
+      .or(
+        `name_en.ilike.${category.name.en},name_ar.ilike.${category.name.ar}`
       )
-    ),
-  ];
+      .maybeSingle();
+
+    if (categoryError) {
+      console.error(
+        "Category error:",
+        categoryError
+      );
+
+      setProducts([]);
+      setLoading(false);
+      return;
+    }
+
+    if (!supabaseCategory) {
+      console.error(
+        "No matching category found in Supabase."
+      );
+
+      setProducts([]);
+      setLoading(false);
+      return;
+    }
+
+    // ------------------------------------------
+    // Fetch products
+    // ------------------------------------------
+
+    const {
+      data,
+      error,
+    } = await supabase
+      .from("products")
+      .select(`
+        id,
+        name_en,
+        name_ar,
+        description_en,
+        description_ar,
+        price,
+        image_url,
+        available,
+        category_id,
+        subcategory,
+        categories (
+          id,
+          name_en,
+          name_ar
+        )
+      `)
+      .eq(
+        "category_id",
+        supabaseCategory.id
+      )
+      .eq("available", true)
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      console.error(
+        "Category products error:",
+        error
+      );
+
+      setProducts([]);
+    } else {
+      setProducts(data || []);
+    }
+
+    setLoading(false);
+  }
+
+  // ==========================================
+  // GET CATEGORY SUBCATEGORIES
+  // ==========================================
+
+  const subcategories =
+    categorySubcategories[categoryId] || [];
+
+  // ==========================================
+  // FILTER PRODUCTS
+  // ==========================================
 
   const filteredProducts =
     selectedSubcategory === "all"
-      ? categoryProducts
-      : categoryProducts.filter(
+      ? products
+      : products.filter(
           (product) =>
-            product.subcategory === selectedSubcategory
+            product.subcategory ===
+            selectedSubcategory
         );
+
+  // ==========================================
+  // CATEGORY NOT FOUND
+  // ==========================================
 
   if (!category) {
     return (
-      <div className="not-found">
-        <h1>
-          {language === "en"
-            ? "Category Not Found"
-            : "القسم غير موجود"}
-        </h1>
-      </div>
+      <main>
+        <div className="empty-category">
+          <p>
+            {language === "en"
+              ? "Category Not Found"
+              : "القسم غير موجود"}
+          </p>
+        </div>
+      </main>
     );
   }
 
-  return (
-    <main className="category-page">
+  // ==========================================
+  // PAGE
+  // ==========================================
 
-      {/* Header */}
+  return (
+    <main>
+
+      {/* ========================================
+          HEADER
+      ======================================== */}
 
       <div className="category-page-header">
 
@@ -69,10 +225,13 @@ function Category() {
 
       </div>
 
-
-      {/* Filters */}
+      {/* ========================================
+          SUBCATEGORY FILTERS
+      ======================================== */}
 
       <div className="subcategory-filters">
+
+        {/* ALL */}
 
         <button
           className={
@@ -89,58 +248,81 @@ function Category() {
             : "الكل"}
         </button>
 
+        {/* SUBCATEGORIES */}
 
-        {subcategories.map((subcategory) => (
-
-          <button
-            key={subcategory}
-            className={
-              selectedSubcategory === subcategory
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              setSelectedSubcategory(subcategory)
-            }
-          >
-
-            {getSubcategoryName(
-              subcategory,
-              language
-            )}
-
-          </button>
-
-        ))}
+        {subcategories.map(
+          (subcategory) => (
+            <button
+              key={subcategory}
+              className={
+                selectedSubcategory ===
+                subcategory
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setSelectedSubcategory(
+                  subcategory
+                )
+              }
+            >
+              {getSubcategoryName(
+                subcategory,
+                language
+              )}
+            </button>
+          )
+        )}
 
       </div>
 
+      {/* ========================================
+          LOADING
+      ======================================== */}
 
-      {/* Products */}
+      {loading ? (
 
-      {filteredProducts.length > 0 ? (
+        <div className="empty-category">
+
+          <p>
+            {language === "en"
+              ? "Loading products..."
+              : "جاري تحميل المنتجات..."}
+          </p>
+
+        </div>
+
+      ) : filteredProducts.length > 0 ? (
+
+        /* ======================================
+           PRODUCTS
+        ====================================== */
 
         <div className="category-products-grid">
 
-          {filteredProducts.map((product) => (
-
-            <ProductCard
-              key={product.id}
-              product={product}
-            />
-
-          ))}
+          {filteredProducts.map(
+            (product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+              />
+            )
+          )}
 
         </div>
 
       ) : (
+
+        /* ======================================
+           EMPTY
+        ====================================== */
 
         <div className="empty-category">
 
           <p>
             {language === "en"
               ? "No products found."
-              : "لا توجد منتجات."}
+              : "لا توجد منتجات في هذا القسم."}
           </p>
 
         </div>
@@ -151,14 +333,14 @@ function Category() {
   );
 }
 
-
-/* Subcategory Translation */
+// ============================================
+// SUBCATEGORY TRANSLATION
+// ============================================
 
 function getSubcategoryName(
   subcategory,
   language
 ) {
-
   const names = {
 
     cookware: {
@@ -191,6 +373,26 @@ function getSubcategoryName(
       ar: "أغطية السرير",
     },
 
+    furniture: {
+      en: "Furniture",
+      ar: "الأثاث",
+    },
+
+    decor: {
+      en: "Decor",
+      ar: "الديكور",
+    },
+
+    "cleaning-tools": {
+      en: "Cleaning Tools",
+      ar: "أدوات التنظيف",
+    },
+
+    serving: {
+      en: "Serving",
+      ar: "التقديم",
+    },
+
   };
 
   return (
@@ -200,3 +402,4 @@ function getSubcategoryName(
 }
 
 export default Category;
+
