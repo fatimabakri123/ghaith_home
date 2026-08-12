@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
@@ -26,7 +25,11 @@ function AddProduct() {
     available: true,
   });
 
-  const [image, setImage] = useState(null);
+  // ==========================================
+  // MULTIPLE IMAGES
+  // ==========================================
+
+  const [images, setImages] = useState([]);
 
   // ==========================================
   // SUBCATEGORY OPTIONS
@@ -54,6 +57,11 @@ function AddProduct() {
         en: "Coffee",
         ar: "القهوة",
       },
+      {
+        value: "serving",
+        en: "Serving",
+        ar: "التقديم",
+      },
     ],
 
     bedroom: [
@@ -66,6 +74,11 @@ function AddProduct() {
         value: "storage",
         en: "Storage",
         ar: "التخزين والتنظيم",
+      },
+      {
+        value: "decor",
+        en: "Decor",
+        ar: "الديكور",
       },
     ],
 
@@ -80,6 +93,11 @@ function AddProduct() {
         en: "Storage",
         ar: "التخزين والتنظيم",
       },
+      {
+        value: "decor",
+        en: "Decor",
+        ar: "الديكور",
+      },
     ],
 
     "living-room": [
@@ -93,6 +111,11 @@ function AddProduct() {
         en: "Decor",
         ar: "الديكور",
       },
+      {
+        value: "storage",
+        en: "Storage",
+        ar: "التخزين والتنظيم",
+      },
     ],
 
     cleaning: [
@@ -100,6 +123,11 @@ function AddProduct() {
         value: "cleaning-tools",
         en: "Cleaning Tools",
         ar: "أدوات التنظيف",
+      },
+      {
+        value: "storage",
+        en: "Storage",
+        ar: "التخزين والتنظيم",
       },
     ],
 
@@ -113,6 +141,16 @@ function AddProduct() {
         value: "coffee",
         en: "Coffee",
         ar: "القهوة",
+      },
+      {
+        value: "dinnerware",
+        en: "Dinnerware",
+        ar: "أطقم السفرة",
+      },
+      {
+        value: "storage",
+        en: "Storage",
+        ar: "التخزين والتنظيم",
       },
     ],
   };
@@ -200,21 +238,6 @@ function AddProduct() {
       return;
     }
 
-    /*
-      Convert category name into the same
-      format used in subcategoryOptions.
-
-      Example:
-
-      Kitchen
-      ↓
-      kitchen
-
-      Living Room
-      ↓
-      living-room
-    */
-
     const categoryKey =
       selectedCategory.name_en
         .toLowerCase()
@@ -231,12 +254,29 @@ function AddProduct() {
   // ==========================================
 
   function handleImageChange(e) {
-    const file =
-      e.target.files?.[0];
+    const files = Array.from(
+      e.target.files || []
+    );
 
-    if (!file) return;
+    if (files.length === 0) return;
 
-    setImage(file);
+    setImages(files);
+
+    // Allow selecting the same files again
+    e.target.value = "";
+  }
+
+  // ==========================================
+  // REMOVE IMAGE
+  // ==========================================
+
+  function removeImage(indexToRemove) {
+    setImages((previous) =>
+      previous.filter(
+        (_, index) =>
+          index !== indexToRemove
+      )
+    );
   }
 
   // ==========================================
@@ -249,22 +289,22 @@ function AddProduct() {
     setError("");
     setLoading(true);
 
-    // -----------------------------
-    // Validate image
-    // -----------------------------
+    // ==========================================
+    // VALIDATE IMAGES
+    // ==========================================
 
-    if (!image) {
+    if (images.length === 0) {
       setError(
-        "Please choose a product image."
+        "Please choose at least one product image."
       );
 
       setLoading(false);
       return;
     }
 
-    // -----------------------------
-    // Validate category
-    // -----------------------------
+    // ==========================================
+    // VALIDATE CATEGORY
+    // ==========================================
 
     if (!form.category_id) {
       setError(
@@ -275,9 +315,9 @@ function AddProduct() {
       return;
     }
 
-    // -----------------------------
-    // Validate subcategory
-    // -----------------------------
+    // ==========================================
+    // VALIDATE SUBCATEGORY
+    // ==========================================
 
     if (!form.subcategory) {
       setError(
@@ -290,71 +330,97 @@ function AddProduct() {
 
     try {
       // ==========================================
-      // 1. UPLOAD IMAGE
+      // 1. UPLOAD ALL IMAGES
       // ==========================================
 
-      const fileExtension =
-        image.name
-          .split(".")
-          .pop()
-          ?.toLowerCase();
+      const uploadedImages = [];
 
-      const fileName =
-        `${crypto.randomUUID()}.${fileExtension}`;
+      for (const image of images) {
+        const fileExtension =
+          image.name
+            .split(".")
+            .pop()
+            ?.toLowerCase();
 
-      const filePath =
-        `products/${fileName}`;
+        const fileName =
+          `${crypto.randomUUID()}.${fileExtension}`;
 
-      const {
-        error: uploadError,
-      } = await supabase.storage
-        .from("product-images")
-        .upload(
-          filePath,
-          image,
-          {
-            cacheControl: "3600",
-            upsert: false,
-          }
+        const filePath =
+          `products/${fileName}`;
+
+        console.log(
+          "Uploading:",
+          filePath
         );
 
-      if (uploadError) {
-        throw uploadError;
+        const {
+          error: uploadError,
+        } = await supabase.storage
+          .from("product-images")
+          .upload(
+            filePath,
+            image,
+            {
+              cacheControl: "3600",
+              upsert: false,
+            }
+          );
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        // ==========================================
+        // GET PUBLIC URL
+        // ==========================================
+
+        const {
+          data: imageData,
+        } = supabase.storage
+          .from("product-images")
+          .getPublicUrl(filePath);
+
+        const imageUrl =
+          imageData?.publicUrl;
+
+        if (!imageUrl) {
+          throw new Error(
+            "Could not create image URL."
+          );
+        }
+
+        uploadedImages.push(imageUrl);
       }
 
       // ==========================================
-      // 2. GET PUBLIC IMAGE URL
+      // MAKE SURE IMAGES WERE UPLOADED
       // ==========================================
 
-      const {
-        data: imageData,
-      } = supabase.storage
-        .from("product-images")
-        .getPublicUrl(filePath);
-
-      const imageUrl =
-        imageData?.publicUrl;
-
-      if (!imageUrl) {
+      if (
+        uploadedImages.length === 0
+      ) {
         throw new Error(
-          "Could not create image URL."
+          "No images were uploaded."
         );
       }
 
+      console.log(
+        "Uploaded images:",
+        uploadedImages
+      );
+
       // ==========================================
-      // 3. INSERT PRODUCT
+      // 2. INSERT PRODUCT
       // ==========================================
 
       const {
+        data: newProduct,
         error: productError,
       } = await supabase
         .from("products")
         .insert({
-          name_en:
-            form.name_en,
-
-          name_ar:
-            form.name_ar,
+          name_en: form.name_en,
+          name_ar: form.name_ar,
 
           description_en:
             form.description_en,
@@ -362,8 +428,7 @@ function AddProduct() {
           description_ar:
             form.description_ar,
 
-          price:
-            Number(form.price),
+          price: Number(form.price),
 
           category_id:
             Number(form.category_id),
@@ -371,16 +436,54 @@ function AddProduct() {
           subcategory:
             form.subcategory,
 
+          // FIRST IMAGE = MAIN IMAGE
           image_url:
-            imageUrl,
+            uploadedImages[0],
 
           available:
             form.available,
-        });
+        })
+        .select()
+        .single();
 
       if (productError) {
         throw productError;
       }
+
+      console.log(
+        "Created product:",
+        newProduct
+      );
+
+      // ==========================================
+      // 3. INSERT ALL IMAGES
+      // ==========================================
+
+      const imageRows =
+        uploadedImages.map(
+          (imageUrl) => ({
+            product_id:
+              newProduct.id,
+
+            image_url:
+              imageUrl,
+          })
+        );
+
+      const {
+        error: imagesError,
+      } = await supabase
+        .from("product_images")
+        .insert(imageRows);
+
+      if (imagesError) {
+        throw imagesError;
+      }
+
+      console.log(
+        "Saved product images:",
+        imageRows
+      );
 
       // ==========================================
       // 4. SUCCESS
@@ -446,16 +549,13 @@ function AddProduct() {
 
         </div>
 
-
         {/* ========================================
             FORM
         ======================================== */}
 
         <form
           className="product-form"
-          onSubmit={
-            handleSubmit
-          }
+          onSubmit={handleSubmit}
         >
 
           {/* ======================================
@@ -465,27 +565,104 @@ function AddProduct() {
           <section className="form-section">
 
             <h2>
-              Product Image
+              Product Images
             </h2>
+
+            <p>
+              Select one or multiple images.
+              The first image will be the main
+              product image.
+            </p>
 
             <input
               type="file"
               accept="image/*"
+              multiple
               onChange={
                 handleImageChange
               }
-              required
+              required={images.length === 0}
             />
 
-            {image && (
-              <p>
-                Selected:{" "}
-                {image.name}
-              </p>
+            {/* IMAGE PREVIEWS */}
+
+            {images.length > 0 && (
+
+              <div className="selected-images">
+
+                <p>
+                  {images.length} image
+                  {images.length !== 1
+                    ? "s"
+                    : ""}{" "}
+                  selected
+                </p>
+
+                <div className="selected-images-list">
+
+                  {images.map(
+                    (image, index) => (
+
+                      <div
+                        key={`${image.name}-${index}`}
+                        className="selected-image-item"
+                      >
+
+                        <div className="image-preview-wrapper">
+
+                          <img
+                            src={URL.createObjectURL(
+                              image
+                            )}
+                            alt={
+                              `Preview ${
+                                index + 1
+                              }`
+                            }
+                          />
+
+                          {/* MAIN IMAGE */}
+
+                          {index === 0 && (
+
+                            <span className="main-image-badge">
+                              Main Image
+                            </span>
+
+                          )}
+
+                          {/* REMOVE */}
+
+                          <button
+                            type="button"
+                            className="remove-image-button"
+                            onClick={() =>
+                              removeImage(
+                                index
+                              )
+                            }
+                          >
+                            ×
+                          </button>
+
+                        </div>
+
+                        <p>
+                          {image.name}
+                        </p>
+
+                      </div>
+
+                    )
+                  )}
+
+                </div>
+
+              </div>
+
             )}
 
           </section>
-
 
           {/* ======================================
               PRODUCT INFORMATION
@@ -496,7 +673,6 @@ function AddProduct() {
             <h2>
               Product Information
             </h2>
-
 
             {/* English Name */}
 
@@ -516,7 +692,6 @@ function AddProduct() {
               placeholder="Example: 12 Piece Cookware Set"
               required
             />
-
 
             {/* Arabic Name */}
 
@@ -540,7 +715,6 @@ function AddProduct() {
 
           </section>
 
-
           {/* ======================================
               DESCRIPTION
           ====================================== */}
@@ -550,7 +724,6 @@ function AddProduct() {
             <h2>
               Description
             </h2>
-
 
             {/* English Description */}
 
@@ -569,7 +742,6 @@ function AddProduct() {
               placeholder="Describe the product..."
               rows="5"
             />
-
 
             {/* Arabic Description */}
 
@@ -592,7 +764,6 @@ function AddProduct() {
 
           </section>
 
-
           {/* ======================================
               PRICE + CATEGORY
           ====================================== */}
@@ -602,7 +773,6 @@ function AddProduct() {
             <h2>
               Pricing & Category
             </h2>
-
 
             {/* Price */}
 
@@ -624,7 +794,6 @@ function AddProduct() {
               step="0.01"
               required
             />
-
 
             {/* Category */}
 
@@ -684,10 +853,7 @@ function AddProduct() {
 
             )}
 
-
-            {/* ==================================
-                SUBCATEGORY
-            ================================== */}
+            {/* SUBCATEGORY */}
 
             <label>
               Subcategory
@@ -709,11 +875,13 @@ function AddProduct() {
             >
 
               <option value="">
+
                 {!form.category_id
                   ? "Select category first"
                   : subcategories.length === 0
                   ? "No subcategories"
                   : "Select subcategory"}
+
               </option>
 
               {subcategories.map(
@@ -745,7 +913,6 @@ function AddProduct() {
 
           </section>
 
-
           {/* ======================================
               AVAILABILITY
           ====================================== */}
@@ -771,7 +938,6 @@ function AddProduct() {
 
           </section>
 
-
           {/* ======================================
               ERROR
           ====================================== */}
@@ -784,7 +950,6 @@ function AddProduct() {
 
           )}
 
-
           {/* ======================================
               SAVE
           ====================================== */}
@@ -792,9 +957,7 @@ function AddProduct() {
           <button
             className="save-product-button"
             type="submit"
-            disabled={
-              loading
-            }
+            disabled={loading}
           >
 
             {loading
@@ -812,4 +975,3 @@ function AddProduct() {
 }
 
 export default AddProduct;
-

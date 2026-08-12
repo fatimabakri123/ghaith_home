@@ -38,7 +38,14 @@ function ProductCard({ product }) {
           </div>
         )}
 
-        {!product.available && (
+        {/* AVAILABILITY */}
+        {product.available ? (
+          <span className="available">
+            {language === "en"
+              ? "Available"
+              : "متوفر"}
+          </span>
+        ) : (
           <span className="out-of-stock">
             {language === "en"
               ? "Out of Stock"

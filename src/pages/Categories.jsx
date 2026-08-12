@@ -1,13 +1,42 @@
+
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
-import categories from "../data/categories";
+import { supabase } from "../lib/supabase";
 
 function Categories() {
   const { language } = useLanguage();
 
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  async function fetchCategories() {
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from("categories")
+      .select("id, name_en, name_ar, image_url")
+      .order("id", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching categories:", error);
+      setCategories([]);
+    } else {
+      console.log("Categories from Supabase:", data);
+      setCategories(data || []);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <main>
 
+      {/* PAGE HEADER */}
       <div className="page-header">
 
         <h1>
@@ -24,41 +53,84 @@ function Categories() {
 
       </div>
 
-      <div className="all-categories-grid">
+      {/* LOADING */}
+      {loading ? (
 
-        {categories.map((category) => (
-          <Link
-            key={category.id}
-            to={`/category/${category.id}`}
-            className="large-category-card"
-          >
+        <div className="empty-category">
+          <p>
+            {language === "en"
+              ? "Loading categories..."
+              : "جاري تحميل الأقسام..."}
+          </p>
+        </div>
 
-            <img
-              src={category.image}
-              alt={category.name[language]}
-            />
+      ) : categories.length === 0 ? (
 
-            <div className="large-category-overlay">
+        <div className="empty-category">
+          <p>
+            {language === "en"
+              ? "No categories found."
+              : "لم يتم العثور على أقسام."}
+          </p>
+        </div>
 
-              <h2>
-                {category.name[language]}
-              </h2>
+      ) : (
 
-              <span>
-                {language === "en"
-                  ? "Explore"
-                  : "اكتشفي القسم"}
-              </span>
+        /* CATEGORIES */
+        <div className="all-categories-grid">
 
-            </div>
+          {categories.map((category) => (
 
-          </Link>
-        ))}
+            <Link
+              key={category.id}
+              to={`/category/${category.id}`}
+              className="large-category-card"
+            >
 
-      </div>
+              <img
+                src={category.image_url}
+                alt={
+                  language === "en"
+                    ? category.name_en
+                    : category.name_ar
+                }
+                onError={(e) => {
+                  console.error(
+                    "Image failed:",
+                    category.image_url
+                  );
+
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+
+              <div className="large-category-overlay">
+
+                <h2>
+                  {language === "en"
+                    ? category.name_en
+                    : category.name_ar}
+                </h2>
+
+                <span>
+                  {language === "en"
+                    ? "Explore"
+                    : "اكتشفي القسم"}
+                </span>
+
+              </div>
+
+            </Link>
+
+          ))}
+
+        </div>
+
+      )}
 
     </main>
   );
 }
 
 export default Categories;
+

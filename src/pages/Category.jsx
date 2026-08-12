@@ -1,8 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
-import categories from "../data/categories";
 import ProductCard from "../components/ProductCard";
 import { supabase } from "../lib/supabase";
 
@@ -10,22 +8,19 @@ function Category() {
   const { categoryId } = useParams();
   const { language } = useLanguage();
 
+  const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [selectedSubcategory, setSelectedSubcategory] =
     useState("all");
 
-  const category = categories.find(
-    (item) => item.id === categoryId
-  );
-
   // ==========================================
-  // SUBCATEGORIES FOR EACH MAIN CATEGORY
+  // SUBCATEGORIES
   // ==========================================
 
   const categorySubcategories = {
-    kitchen: [
+    Kitchen: [
       "cookware",
       "dinnerware",
       "storage",
@@ -33,30 +28,30 @@ function Category() {
       "serving",
     ],
 
-    bedroom: [
+    Bedroom: [
       "bed-linen",
       "storage",
       "decor",
     ],
 
-    bathroom: [
+    Bathroom: [
       "towels",
       "storage",
       "decor",
     ],
 
-    "living-room": [
+    "Living Room": [
       "furniture",
       "decor",
       "storage",
     ],
 
-    cleaning: [
+    Cleaning: [
       "cleaning-tools",
       "storage",
     ],
 
-    hospitality: [
+    Hospitality: [
       "serving",
       "coffee",
       "dinnerware",
@@ -65,31 +60,31 @@ function Category() {
   };
 
   // ==========================================
-  // FETCH PRODUCTS
+  // FETCH CATEGORY + PRODUCTS
   // ==========================================
 
   useEffect(() => {
-    if (category) {
-      fetchProducts();
+    if (categoryId) {
+      fetchCategoryAndProducts();
     }
   }, [categoryId]);
 
-  async function fetchProducts() {
+  async function fetchCategoryAndProducts() {
     setLoading(true);
 
-    // ------------------------------------------
-    // Find matching Supabase category
-    // ------------------------------------------
+    console.log("URL category ID:", categoryId);
+
+    // ==========================================
+    // GET CATEGORY DIRECTLY BY SUPABASE ID
+    // ==========================================
 
     const {
-      data: supabaseCategory,
+      data: categoryData,
       error: categoryError,
     } = await supabase
       .from("categories")
-      .select("id, name_en, name_ar")
-      .or(
-        `name_en.ilike.${category.name.en},name_ar.ilike.${category.name.ar}`
-      )
+      .select("id, name_en, name_ar, image_url")
+      .eq("id", categoryId)
       .maybeSingle();
 
     if (categoryError) {
@@ -98,76 +93,82 @@ function Category() {
         categoryError
       );
 
+      setCategory(null);
       setProducts([]);
       setLoading(false);
       return;
     }
 
-    if (!supabaseCategory) {
+    if (!categoryData) {
       console.error(
-        "No matching category found in Supabase."
+        "No category found with ID:",
+        categoryId
       );
 
+      setCategory(null);
       setProducts([]);
       setLoading(false);
       return;
     }
 
-    // ------------------------------------------
-    // Fetch products
-    // ------------------------------------------
+    console.log(
+      "Supabase category:",
+      categoryData
+    );
 
-    const {
-      data,
-      error,
-    } = await supabase
-      .from("products")
-      .select(`
-        id,
-        name_en,
-        name_ar,
-        description_en,
-        description_ar,
-        price,
-        image_url,
-        available,
-        category_id,
-        subcategory,
-        categories (
-          id,
-          name_en,
-          name_ar
-        )
-      `)
-      .eq(
-        "category_id",
-        supabaseCategory.id
-      )
-      .eq("available", true)
-      .order("created_at", {
-        ascending: false,
-      });
+    setCategory(categoryData);
 
-    if (error) {
+    // ==========================================
+    // GET PRODUCTS FOR THIS CATEGORY
+    // ==========================================
+const {
+  data: productsData,
+  error: productsError,
+} = await supabase
+  .from("products")
+  .select(`
+    id,
+    name_en,
+    name_ar,
+    description_en,
+    description_ar,
+    price,
+    image_url,
+    available,
+    category_id,
+    subcategory,
+    created_at
+  `)
+  .eq("category_id", categoryData.id)
+  .order("created_at", {
+    ascending: false,
+  });
+
+    if (productsError) {
       console.error(
         "Category products error:",
-        error
+        productsError
       );
 
       setProducts([]);
     } else {
-      setProducts(data || []);
+      console.log(
+        "Products for category:",
+        productsData
+      );
+
+      setProducts(productsData || []);
     }
 
     setLoading(false);
   }
 
   // ==========================================
-  // GET CATEGORY SUBCATEGORIES
+  // GET SUBCATEGORIES
   // ==========================================
 
   const subcategories =
-    categorySubcategories[categoryId] || [];
+    categorySubcategories[category?.name_en] || [];
 
   // ==========================================
   // FILTER PRODUCTS
@@ -186,7 +187,7 @@ function Category() {
   // CATEGORY NOT FOUND
   // ==========================================
 
-  if (!category) {
+  if (!loading && !category) {
     return (
       <main>
         <div className="empty-category">
@@ -214,14 +215,22 @@ function Category() {
       <div className="category-page-header">
 
         <h1>
-          {category.name[language]}
+          {loading
+            ? language === "en"
+              ? "Loading..."
+              : "جاري التحميل..."
+            : language === "en"
+              ? category?.name_en
+              : category?.name_ar}
         </h1>
 
-        <p>
-          {language === "en"
-            ? "Discover our collection."
-            : "اكتشفي مجموعتنا من المنتجات."}
-        </p>
+        {!loading && (
+          <p>
+            {language === "en"
+              ? "Discover our collection."
+              : "اكتشفي مجموعتنا من المنتجات."}
+          </p>
+        )}
 
       </div>
 
@@ -229,52 +238,54 @@ function Category() {
           SUBCATEGORY FILTERS
       ======================================== */}
 
-      <div className="subcategory-filters">
+      {!loading && category && (
+        <div className="subcategory-filters">
 
-        {/* ALL */}
+          {/* ALL */}
 
-        <button
-          className={
-            selectedSubcategory === "all"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setSelectedSubcategory("all")
-          }
-        >
-          {language === "en"
-            ? "All"
-            : "الكل"}
-        </button>
+          <button
+            className={
+              selectedSubcategory === "all"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setSelectedSubcategory("all")
+            }
+          >
+            {language === "en"
+              ? "All"
+              : "الكل"}
+          </button>
 
-        {/* SUBCATEGORIES */}
+          {/* SUBCATEGORIES */}
 
-        {subcategories.map(
-          (subcategory) => (
-            <button
-              key={subcategory}
-              className={
-                selectedSubcategory ===
-                subcategory
-                  ? "active"
-                  : ""
-              }
-              onClick={() =>
-                setSelectedSubcategory(
+          {subcategories.map(
+            (subcategory) => (
+              <button
+                key={subcategory}
+                className={
+                  selectedSubcategory ===
                   subcategory
-                )
-              }
-            >
-              {getSubcategoryName(
-                subcategory,
-                language
-              )}
-            </button>
-          )
-        )}
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  setSelectedSubcategory(
+                    subcategory
+                  )
+                }
+              >
+                {getSubcategoryName(
+                  subcategory,
+                  language
+                )}
+              </button>
+            )
+          )}
 
-      </div>
+        </div>
+      )}
 
       {/* ========================================
           LOADING
@@ -402,4 +413,3 @@ function getSubcategoryName(
 }
 
 export default Category;
-

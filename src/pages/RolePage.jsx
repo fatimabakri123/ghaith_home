@@ -1,4 +1,4 @@
-
+import "./role.css"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +11,7 @@ export default function RolePage() {
 
   const content = {
     en: {
-      brand: "SMA",
+      brand: "GAITH HOME",
       title: "Welcome",
       subtitle: "Please choose how you want to continue",
       customer: "Customer",

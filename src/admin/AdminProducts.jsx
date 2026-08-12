@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
@@ -11,13 +10,15 @@ function AdminProducts() {
   // EDIT MODAL
   // ==========================================
 
-  const [showEditModal, setShowEditModal] =
-    useState(false);
-
-  const [editingProduct, setEditingProduct] =
-    useState(null);
-
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  // ==========================================
+  // CURRENT IMAGE FOR EACH PRODUCT
+  // ==========================================
+
+  const [currentImages, setCurrentImages] = useState({});
 
   // ==========================================
   // FETCH PRODUCTS
@@ -31,46 +32,223 @@ function AdminProducts() {
     setLoading(true);
     setError("");
 
-    const { data, error } = await supabase
-      .from("products")
-      .select(`
-        id,
-        name_en,
-        name_ar,
-        description_en,
-        description_ar,
-        price,
-        image_url,
-        available,
-        category_id,
-        subcategory,
-        categories (
+    try {
+      // ========================================
+      // GET PRODUCTS
+      // ========================================
+
+      const {
+        data: productsData,
+        error: productsError,
+      } = await supabase
+        .from("products")
+        .select(`
           id,
           name_en,
-          name_ar
-        )
-      `)
-      .order("created_at", {
-        ascending: false,
-      });
+          name_ar,
+          description_en,
+          description_ar,
+          price,
+          image_url,
+          available,
+          category_id,
+          subcategory,
+          created_at,
+          categories (
+            id,
+            name_en,
+            name_ar
+          )
+        `)
+        .order("created_at", {
+          ascending: false,
+        });
 
-    if (error) {
+      if (productsError) {
+        console.error(
+          "Products error:",
+          productsError
+        );
+
+        setError("Could not load products.");
+        setLoading(false);
+        return;
+      }
+
+      // ========================================
+      // GET ALL ADDITIONAL IMAGES
+      // ========================================
+
+      const {
+        data: additionalImages,
+        error: imagesError,
+      } = await supabase
+        .from("product_images")
+        .select(`
+          id,
+          product_id,
+          image_url
+        `)
+        .order("id", {
+          ascending: true,
+        });
+
+      if (imagesError) {
+        console.error(
+          "Product images error:",
+          imagesError
+        );
+
+        // Don't stop loading products
+        // if additional images fail
+      }
+
+      // ========================================
+      // COMBINE MAIN + ADDITIONAL IMAGES
+      // ========================================
+
+      const productsWithImages =
+        (productsData || []).map((product) => {
+          const images = [];
+
+          // -----------------------------
+          // MAIN IMAGE
+          // -----------------------------
+
+          if (product.image_url) {
+            images.push({
+              id: `main-${product.id}`,
+              image_url: product.image_url,
+              isMain: true,
+            });
+          }
+
+          // -----------------------------
+          // ADDITIONAL IMAGES
+          // -----------------------------
+
+          const productAdditionalImages =
+            (additionalImages || []).filter(
+              (image) =>
+                String(image.product_id) ===
+                String(product.id)
+            );
+
+          productAdditionalImages.forEach(
+            (image) => {
+              // Avoid duplicate image
+              if (
+                image.image_url &&
+                !images.some(
+                  (existingImage) =>
+                    existingImage.image_url ===
+                    image.image_url
+                )
+              ) {
+                images.push({
+                  id: image.id,
+                  image_url: image.image_url,
+                  isMain: false,
+                });
+              }
+            }
+          );
+
+          return {
+            ...product,
+            images,
+          };
+        });
+
+      console.log(
+        "PRODUCTS WITH IMAGES:",
+        productsWithImages
+      );
+
+      setProducts(productsWithImages);
+
+      // ========================================
+      // RESET CURRENT IMAGE
+      // ========================================
+
+      const initialImages = {};
+
+      productsWithImages.forEach(
+        (product) => {
+          initialImages[product.id] = 0;
+        }
+      );
+
+      setCurrentImages(initialImages);
+
+    } catch (err) {
       console.error(
-        "Products error:",
-        error
+        "Fetch products unexpected error:",
+        err
       );
 
       setError(
-        "Could not load products."
+        err.message ||
+          "Could not load products."
       );
-
-      setLoading(false);
-      return;
     }
 
-    setProducts(data || []);
-
     setLoading(false);
+  }
+
+  // ==========================================
+  // CHANGE PRODUCT IMAGE
+  // ==========================================
+
+  function changeProductImage(
+    productId,
+    imageIndex
+  ) {
+    setCurrentImages((previous) => ({
+      ...previous,
+      [productId]: imageIndex,
+    }));
+  }
+
+  // ==========================================
+  // NEXT IMAGE
+  // ==========================================
+
+  function nextImage(product) {
+    if (!product.images?.length) return;
+
+    const currentIndex =
+      currentImages[product.id] || 0;
+
+    const nextIndex =
+      (currentIndex + 1) %
+      product.images.length;
+
+    changeProductImage(
+      product.id,
+      nextIndex
+    );
+  }
+
+  // ==========================================
+  // PREVIOUS IMAGE
+  // ==========================================
+
+  function previousImage(product) {
+    if (!product.images?.length) return;
+
+    const currentIndex =
+      currentImages[product.id] || 0;
+
+    const previousIndex =
+      currentIndex === 0
+        ? product.images.length - 1
+        : currentIndex - 1;
+
+    changeProductImage(
+      product.id,
+      previousIndex
+    );
   }
 
   // ==========================================
@@ -80,19 +258,31 @@ function AdminProducts() {
   function handleEdit(product) {
     setEditingProduct({
       id: product.id,
-      name_en: product.name_en || "",
-      name_ar: product.name_ar || "",
+
+      name_en:
+        product.name_en || "",
+
+      name_ar:
+        product.name_ar || "",
+
       description_en:
         product.description_en || "",
+
       description_ar:
         product.description_ar || "",
-      price: product.price || "",
+
+      price:
+        product.price || "",
+
       image_url:
         product.image_url || "",
+
       available:
         product.available ?? true,
+
       category_id:
         product.category_id || "",
+
       subcategory:
         product.subcategory || "",
     });
@@ -116,8 +306,12 @@ function AdminProducts() {
   // ==========================================
 
   function handleEditChange(e) {
-    const { name, value, type, checked } =
-      e.target;
+    const {
+      name,
+      value,
+      type,
+      checked,
+    } = e.target;
 
     setEditingProduct((previous) => ({
       ...previous,
@@ -133,131 +327,106 @@ function AdminProducts() {
   // SAVE EDIT
   // ==========================================
 
-async function handleSaveEdit(e) {
-  e.preventDefault();
+  async function handleSaveEdit(e) {
+    e.preventDefault();
 
-  if (!editingProduct) return;
+    if (!editingProduct) return;
 
-  setSaving(true);
-  setError("");
+    setSaving(true);
+    setError("");
 
-  try {
-    const {
-      id,
-      name_en,
-      name_ar,
-      description_en,
-      description_ar,
-      price,
-      image_url,
-      available,
-      category_id,
-      subcategory,
-    } = editingProduct;
+    try {
+      const {
+        id,
+        name_en,
+        name_ar,
+        description_en,
+        description_ar,
+        price,
+        image_url,
+        available,
+        category_id,
+        subcategory,
+      } = editingProduct;
 
-    console.log("UPDATING PRODUCT:", id);
+      console.log(
+        "UPDATING PRODUCT:",
+        id
+      );
 
-    // ========================================
-    // UPDATE PRODUCT IN SUPABASE
-    // ========================================
+      const {
+        error,
+      } = await supabase
+        .from("products")
+        .update({
+          name_en,
+          name_ar,
+          description_en,
+          description_ar,
+          price: Number(price),
+          image_url,
+          available,
+          category_id:
+            category_id
+              ? Number(category_id)
+              : null,
+          subcategory,
+        })
+        .eq("id", id);
 
-    const { error } = await supabase
-      .from("products")
-      .update({
-        name_en: name_en,
-        name_ar: name_ar,
-        description_en: description_en,
-        description_ar: description_ar,
-        price: Number(price),
-        image_url: image_url,
-        available: available,
-        category_id: category_id,
-        subcategory: subcategory,
-      })
-      .eq("id", id);
+      if (error) {
+        console.error(
+          "UPDATE PRODUCT ERROR:",
+          error
+        );
 
-    // ========================================
-    // CHECK UPDATE ERROR
-    // ========================================
+        setError(error.message);
 
-    if (error) {
+        alert(
+          `Could not update product.\n\n${error.message}`
+        );
+
+        setSaving(false);
+        return;
+      }
+
+      console.log(
+        "PRODUCT UPDATED SUCCESSFULLY:",
+        id
+      );
+
+      await fetchProducts();
+
+      setShowEditModal(false);
+      setEditingProduct(null);
+
+      alert(
+        "Product updated successfully!"
+      );
+
+    } catch (error) {
       console.error(
-        "UPDATE PRODUCT ERROR:",
+        "UNEXPECTED UPDATE ERROR:",
         error
       );
 
-      console.error(
-        "ERROR CODE:",
-        error.code
-      );
-
-      console.error(
-        "ERROR MESSAGE:",
-        error.message
-      );
-
-      console.error(
-        "ERROR DETAILS:",
-        error.details
-      );
-
-      console.error(
-        "ERROR HINT:",
-        error.hint
-      );
-
-      setError(error.message);
-
       alert(
-        `Could not update product.\n\n${error.message}`
+        `Something went wrong.\n\n${error.message}`
       );
-
-      setSaving(false);
-      return;
     }
 
-    // ========================================
-    // UPDATE SUCCESSFUL
-    // ========================================
-
-    console.log(
-      "PRODUCT UPDATED SUCCESSFULLY:",
-      id
-    );
-
-    // Get the updated products again
-    await fetchProducts();
-
-    // Close modal
-    setShowEditModal(false);
-    setEditingProduct(null);
-
-    alert(
-      "Product updated successfully!"
-    );
-
-  } catch (error) {
-    console.error(
-      "UNEXPECTED UPDATE ERROR:",
-      error
-    );
-
-    alert(
-      `Something went wrong.\n\n${error.message}`
-    );
+    setSaving(false);
   }
-
-  setSaving(false);
-}
 
   // ==========================================
   // DELETE PRODUCT
   // ==========================================
 
   async function handleDelete(product) {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${product.name_en}"?`
-    );
+    const confirmed =
+      window.confirm(
+        `Are you sure you want to delete "${product.name_en}"?`
+      );
 
     if (!confirmed) {
       return;
@@ -271,7 +440,31 @@ async function handleSaveEdit(e) {
         product.id
       );
 
-      const { error } = await supabase
+      // ========================================
+      // DELETE ADDITIONAL IMAGES
+      // ========================================
+
+      const {
+        error: imagesDeleteError,
+      } = await supabase
+        .from("product_images")
+        .delete()
+        .eq("product_id", product.id);
+
+      if (imagesDeleteError) {
+        console.error(
+          "Delete product images error:",
+          imagesDeleteError
+        );
+      }
+
+      // ========================================
+      // DELETE PRODUCT
+      // ========================================
+
+      const {
+        error,
+      } = await supabase
         .from("products")
         .delete()
         .eq("id", product.id);
@@ -292,14 +485,15 @@ async function handleSaveEdit(e) {
       }
 
       // ========================================
-      // REMOVE PRODUCT FROM SCREEN
+      // REMOVE FROM SCREEN
       // ========================================
 
-      setProducts((currentProducts) =>
-        currentProducts.filter(
-          (item) =>
-            item.id !== product.id
-        )
+      setProducts(
+        (currentProducts) =>
+          currentProducts.filter(
+            (item) =>
+              item.id !== product.id
+          )
       );
 
       alert(
@@ -407,107 +601,389 @@ async function handleSaveEdit(e) {
 
           <div className="products-grid">
 
-            {products.map((product) => (
+            {products.map((product) => {
 
-              <div
-                className="admin-product-card"
-                key={product.id}
-              >
+              const images =
+                product.images || [];
 
-                {/* IMAGE */}
+              const currentIndex =
+                currentImages[
+                  product.id
+                ] || 0;
 
-                <div className="product-image">
+              const currentImage =
+                images[currentIndex]
+                  ?.image_url ||
+                product.image_url;
 
-                  {product.image_url ? (
+              return (
 
-                    <img
-                      src={product.image_url}
-                      alt={product.name_en}
+                <div
+                  className="admin-product-card"
+                  key={product.id}
+                >
+
+                  {/* ==================================
+                      IMAGE GALLERY
+                  ================================== */}
+
+                  <div className="product-image">
+
+                    {currentImage ? (
+
+                      <div
+                        style={{
+                          position:
+                            "relative",
+                          width: "100%",
+                        }}
+                      >
+
+                        {/* MAIN IMAGE */}
+
+                        <img
+                          src={currentImage}
+                          alt={
+                            product.name_en
+                          }
+                          style={{
+                            width: "100%",
+                            height:
+                              "250px",
+                            objectFit:
+                              "cover",
+                            display:
+                              "block",
+                          }}
+                        />
+
+                        {/* ==================================
+                            ARROWS
+                        ================================== */}
+
+                        {images.length > 1 && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                previousImage(
+                                  product
+                                )
+                              }
+                              style={{
+                                position:
+                                  "absolute",
+                                left:
+                                  "10px",
+                                top:
+                                  "50%",
+                                transform:
+                                  "translateY(-50%)",
+                                width:
+                                  "38px",
+                                height:
+                                  "38px",
+                                borderRadius:
+                                  "50%",
+                                border:
+                                  "none",
+                                background:
+                                  "rgba(0,0,0,0.65)",
+                                color:
+                                  "white",
+                                fontSize:
+                                  "22px",
+                                cursor:
+                                  "pointer",
+                                zIndex: 2,
+                              }}
+                            >
+                              ‹
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                nextImage(
+                                  product
+                                )
+                              }
+                              style={{
+                                position:
+                                  "absolute",
+                                right:
+                                  "10px",
+                                top:
+                                  "50%",
+                                transform:
+                                  "translateY(-50%)",
+                                width:
+                                  "38px",
+                                height:
+                                  "38px",
+                                borderRadius:
+                                  "50%",
+                                border:
+                                  "none",
+                                background:
+                                  "rgba(0,0,0,0.65)",
+                                color:
+                                  "white",
+                                fontSize:
+                                  "22px",
+                                cursor:
+                                  "pointer",
+                                zIndex: 2,
+                              }}
+                            >
+                              ›
+                            </button>
+                          </>
+                        )}
+
+                        {/* ==================================
+                            IMAGE COUNT
+                        ================================== */}
+
+                        {images.length > 1 && (
+                          <div
+                            style={{
+                              position:
+                                "absolute",
+                              right:
+                                "10px",
+                              bottom:
+                                "10px",
+                              background:
+                                "rgba(0,0,0,0.7)",
+                              color:
+                                "white",
+                              padding:
+                                "5px 10px",
+                              borderRadius:
+                                "15px",
+                              fontSize:
+                                "13px",
+                              zIndex: 2,
+                            }}
+                          >
+                            {currentIndex +
+                              1}{" "}
+                            /{" "}
+                            {
+                              images.length
+                            }
+                          </div>
+                        )}
+
+                      </div>
+
+                    ) : (
+
+                      <div className="no-image">
+                        No Image
+                      </div>
+
+                    )}
+
+                  </div>
+
+                  {/* ==================================
+                      THUMBNAILS
+                  ================================== */}
+
+                  {images.length > 1 && (
+
+                    <div
                       style={{
-                        width: "100%",
-                        height: "250px",
-                        objectFit: "cover",
-                        display: "block",
+                        display:
+                          "flex",
+                        gap: "8px",
+                        padding:
+                          "10px",
+                        overflowX:
+                          "auto",
+                        background:
+                          "#f8f5f0",
                       }}
-                    />
+                    >
 
-                  ) : (
+                      {images.map(
+                        (
+                          image,
+                          index
+                        ) => (
 
-                    <div className="no-image">
-                      No Image
+                          <button
+                            type="button"
+                            key={
+                              image.id
+                            }
+                            onClick={() =>
+                              changeProductImage(
+                                product.id,
+                                index
+                              )
+                            }
+                            style={{
+                              padding:
+                                "2px",
+                              border:
+                                currentIndex ===
+                                index
+                                  ? "2px solid #8b5e3c"
+                                  : "2px solid transparent",
+                              borderRadius:
+                                "6px",
+                              background:
+                                "white",
+                              cursor:
+                                "pointer",
+                              flexShrink:
+                                0,
+                            }}
+                          >
+
+                            <img
+                              src={
+                                image.image_url
+                              }
+                              alt=""
+                              style={{
+                                width:
+                                  "55px",
+                                height:
+                                  "55px",
+                                objectFit:
+                                  "cover",
+                                borderRadius:
+                                  "4px",
+                                display:
+                                  "block",
+                              }}
+                            />
+
+                          </button>
+
+                        )
+                      )}
+
                     </div>
 
                   )}
 
-                </div>
+                  {/* ==================================
+                      INFO
+                  ================================== */}
 
-                {/* INFO */}
+                  <div className="product-info">
 
-                <div className="product-info">
+                    <h2>
+                      {product.name_en}
+                    </h2>
 
-                  <h2>
-                    {product.name_en}
-                  </h2>
-
-                  <p className="arabic-name">
-                    {product.name_ar}
-                  </p>
-
-                  <p className="product-category">
-
-                    {product.categories
-                      ?.name_en ||
-                      "No category"}
-
-                  </p>
-
-                  {product.subcategory && (
-
-                    <p className="product-subcategory">
-                      {product.subcategory}
+                    <p className="arabic-name">
+                      {product.name_ar}
                     </p>
 
-                  )}
+                    <p className="product-category">
+                      {product.categories
+                        ?.name_en ||
+                        "No category"}
+                    </p>
 
-                  <strong>
-                    ${product.price}
-                  </strong>
+                    {product.subcategory && (
+                      <p className="product-subcategory">
+                        {
+                          product.subcategory
+                        }
+                      </p>
+                    )}
 
-                  <p>
-                    {product.available
-                      ? "✓ Available"
-                      : "× Not Available"}
-                  </p>
+                    <strong>
+                      ${product.price}
+                    </strong>
 
-                  {/* ACTIONS */}
+                    {/* ==================================
+                        AVAILABILITY
+                    ================================== */}
 
-                  <div className="product-actions">
-
-                    <button
-                      className="edit-product-btn"
-                      onClick={() =>
-                        handleEdit(product)
-                      }
+                    <p
+                      style={{
+                        color:
+                          product.available
+                            ? "green"
+                            : "#c62828",
+                        fontWeight:
+                          "700",
+                        fontSize:
+                          "15px",
+                      }}
                     >
-                      ✏️ Edit
-                    </button>
+                      {product.available
+                        ? "✓ Available"
+                        : "× Not Available"}
+                    </p>
 
-                    <button
-                      className="delete-product-btn"
-                      onClick={() =>
-                        handleDelete(product)
-                      }
-                    >
-                      🗑️ Delete
-                    </button>
+                    {/* ==================================
+                        IMAGE COUNT
+                    ================================== */}
+
+                    {images.length > 0 && (
+                      <p
+                        style={{
+                          fontSize:
+                            "13px",
+                          color:
+                            "#777",
+                          margin:
+                            "5px 0",
+                        }}
+                      >
+                        📷{" "}
+                        {images.length}{" "}
+                        {images.length ===
+                        1
+                          ? "image"
+                          : "images"}
+                      </p>
+                    )}
+
+                    {/* ==================================
+                        ACTIONS
+                    ================================== */}
+
+                    <div className="product-actions">
+
+                      <button
+                        className="edit-product-btn"
+                        onClick={() =>
+                          handleEdit(
+                            product
+                          )
+                        }
+                      >
+                        ✏️ Edit
+                      </button>
+
+                      <button
+                        className="delete-product-btn"
+                        onClick={() =>
+                          handleDelete(
+                            product
+                          )
+                        }
+                      >
+                        🗑️ Delete
+                      </button>
+
+                    </div>
 
                   </div>
 
                 </div>
-
-              </div>
-
-            ))}
+              );
+            })}
 
           </div>
         )}
@@ -536,17 +1012,23 @@ async function handleSaveEdit(e) {
               <div className="edit-modal-header">
 
                 <div>
-                  <p>Edit Product</p>
+
+                  <p>
+                    Edit Product
+                  </p>
 
                   <h2>
                     {editingProduct.name_en ||
                       "Product"}
                   </h2>
+
                 </div>
 
                 <button
                   className="close-modal-btn"
-                  onClick={closeEditModal}
+                  onClick={
+                    closeEditModal
+                  }
                   disabled={saving}
                 >
                   ×
@@ -557,7 +1039,9 @@ async function handleSaveEdit(e) {
               {/* FORM */}
 
               <form
-                onSubmit={handleSaveEdit}
+                onSubmit={
+                  handleSaveEdit
+                }
                 className="edit-product-form"
               >
 
@@ -679,20 +1163,19 @@ async function handleSaveEdit(e) {
 
                 </div>
 
-                {/* IMAGE URL */}
+                {/* MAIN IMAGE URL */}
 
                 <div className="form-group">
 
                   <label>
-                    Image URL
+                    Main Image URL
                   </label>
 
                   <input
                     type="text"
                     name="image_url"
                     value={
-                      editingProduct
-                        .image_url
+                      editingProduct.image_url
                     }
                     onChange={
                       handleEditChange
@@ -791,4 +1274,3 @@ async function handleSaveEdit(e) {
 }
 
 export default AdminProducts;
-
