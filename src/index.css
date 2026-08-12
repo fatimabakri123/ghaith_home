@@ -57,28 +57,423 @@ body {
    NAVBAR
 ===================================================== */
 
+/* =========================================
+   NAVBAR
+========================================= */
+
 .navbar {
   width: 100%;
-  background: rgba(255, 255, 255, 0.97);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 3px 18px rgba(103, 73, 55, 0.04);
-}
+  position: relative;
+  z-index: 9999;
 
+  background: #fffaf4;
+  border-bottom: 1px solid #eadfd3;
+
+  font-family: "Poppins", "Segoe UI", sans-serif;
+}
 
 .navbar-container {
   width: 100%;
-  max-width: 1400px;
-  min-height: 130px;
-  margin: auto;
-  padding: 10px 45px;
+  max-width: 1250px;
+  min-height: 78px;
+
+  margin: 0 auto;
+  padding: 0 25px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 30px;
+
+  box-sizing: border-box;
+}
+
+/* =========================================
+   LOGO
+========================================= */
+
+.logo {
+  display: flex;
+  align-items: center;
+
+  text-decoration: none;
+
+  flex-shrink: 0;
+}
+
+.logo-image {
+  width: 125px;
+  height: 58px;
+
+  object-fit: contain;
+  display: block;
+
+  border-radius: 8px;
+}
+
+/* =========================================
+   DESKTOP NAV LINKS
+========================================= */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 35px;
+}
+
+.nav-links a {
+  color: #3d3028;
+
+  text-decoration: none;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  transition: 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #8b6a52;
+}
+
+/* =========================================
+   NAV ACTIONS
+========================================= */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================
+   LANGUAGE
+========================================= */
+
+.language-btn {
+  border: none;
+  background: transparent;
+
+  color: #3d3028;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  padding: 8px 5px;
+}
+
+.language-btn:hover {
+  color: #8b6a52;
+}
+
+/* =========================================
+   BRIDAL LIST
+========================================= */
+
+.cart-btn {
+  position: relative;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f1e7dc;
+
+  text-decoration: none;
+
+  transition: 0.2s ease;
+}
+
+.cart-btn:hover {
+  background: #e7d8ca;
+}
+
+.cart-icon {
+  font-size: 19px;
+}
+
+.cart-count {
+  position: absolute;
+
+  top: -5px;
+  right: -5px;
+
+  min-width: 19px;
+  height: 19px;
+
+  padding: 0 5px;
+
+  border-radius: 50%;
+
+  background: #6b4f3f;
+  color: white;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+}
+
+/* =========================================
+   MOBILE BUTTON
+========================================= */
+
+.mobile-menu-btn {
+  display: none;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #f1e7dc;
+  color: #3d3028;
+
+  font-size: 22px;
+
+  cursor: pointer;
+
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================
+   MOBILE MENU
+========================================= */
+
+.mobile-menu {
+  display: none;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .navbar {
+    position: relative;
+
+    width: 100%;
+  }
+
+  .navbar-container {
+    min-height: 68px;
+
+    padding: 5px 14px;
+
+    gap: 10px;
+  }
+
+  /* LOGO */
+
+  .logo {
+    flex: 1;
+
+    justify-content: flex-start;
+
+    min-width: 0;
+  }
+
+  .logo-image {
+    width: 105px;
+    height: 50px;
+  }
+
+  /* HIDE DESKTOP LINKS */
+
+  .nav-links {
+    display: none;
+  }
+
+  /* ACTIONS */
+
+  .nav-actions {
+    display: flex;
+
+    gap: 8px;
+
+    flex-shrink: 0;
+  }
+
+  /* LANGUAGE HIDDEN FROM TOP */
+
+  .language-btn {
+    display: none;
+  }
+
+  /* BRIDAL LIST */
+
+  .cart-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* MENU BUTTON */
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  /* =====================================
+     THE ACTUAL MOBILE MENU
+  ===================================== */
+
+  .mobile-menu {
+    position: absolute;
+
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    width: 100%;
+
+    background: #fffaf4;
+
+    border-top: 1px solid #eadfd3;
+    border-bottom: 1px solid #eadfd3;
+
+    box-shadow:
+      0 10px 25px rgba(61, 48, 40, 0.12);
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 10px 0;
+
+    z-index: 10000;
+
+    box-sizing: border-box;
+  }
+
+  /* LINKS */
+
+  .mobile-menu a {
+    width: 100%;
+
+    padding: 16px 22px;
+
+    box-sizing: border-box;
+
+    color: #3d3028;
+
+    text-decoration: none;
+
+    font-size: 16px;
+    font-weight: 500;
+
+    border-bottom: 1px solid #eee4da;
+
+    display: block;
+  }
+
+  .mobile-menu a:hover {
+    background: #f6eee6;
+    color: #8b6a52;
+  }
+
+  /* CHECKLIST */
+
+  .mobile-checklist-link {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mobile-list-count {
+    min-width: 22px;
+    height: 22px;
+
+    padding: 0 6px;
+
+    border-radius: 50%;
+
+    background: #6b4f3f;
+    color: white;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* LANGUAGE */
+
+  .mobile-language-btn {
+    width: calc(100% - 44px);
+
+    margin: 12px 22px 8px;
+
+    padding: 13px;
+
+    border: 1px solid #d8c8ba;
+    border-radius: 10px;
+
+    background: #f6eee6;
+    color: #3d3028;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+  }
+
+  .mobile-language-btn:hover {
+    background: #eadfd3;
+  }
+}
+
+
+/* =========================================
+   VERY SMALL MOBILE
+========================================= */
+
+@media (max-width: 400px) {
+
+  .navbar-container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .logo-image {
+    width: 95px;
+    height: 46px;
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .cart-btn,
+  .mobile-menu-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .mobile-menu a {
+    padding: 15px 18px;
+  }
 }
 
 
@@ -2687,4 +3082,319 @@ body {
     animation: none !important;
   }
 
+}
+
+/* =========================================
+   PRODUCT DETAILS PAGE
+========================================= */
+
+.product-details-page {
+  min-height: 100vh;
+  background: #f6f1e9;
+  color: #3d3028;
+  padding: 35px 6%;
+}
+
+/* Back */
+
+.product-details-back {
+  margin-bottom: 25px;
+}
+
+.product-details-back a {
+  color: #6b4f3f;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.product-details-back a:hover {
+  color: #8b6a52;
+}
+
+/* Container */
+
+.product-details-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  background: #fffaf4;
+  padding: 35px;
+  border-radius: 24px;
+  box-shadow: 0 8px 30px rgba(61, 48, 40, 0.08);
+}
+
+/* =========================================
+   GALLERY
+========================================= */
+
+.product-main-image {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  background: #eee5da;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.product-main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Arrows */
+
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 250, 244, 0.9);
+  color: #4b382e;
+  font-size: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+  transition: 0.2s ease;
+  z-index: 2;
+}
+
+.gallery-arrow:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+.gallery-arrow-left {
+  left: 15px;
+}
+
+.gallery-arrow-right {
+  right: 15px;
+}
+
+/* Counter */
+
+.image-counter {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  background: rgba(61, 48, 40, 0.8);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* Availability */
+
+.product-availability {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 3;
+}
+
+/* Thumbnails */
+
+.product-thumbnails {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  overflow-x: auto;
+}
+
+.product-thumbnail {
+  width: 75px;
+  height: 75px;
+  flex-shrink: 0;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+  background: #eee5da;
+  cursor: pointer;
+}
+
+.product-thumbnail.active {
+  border-color: #8b6a52;
+}
+
+.product-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =========================================
+   PRODUCT INFO
+========================================= */
+
+.product-details-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.product-details-category {
+  color: #9a7659;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.product-details-info h1 {
+  font-size: 38px;
+  margin: 0 0 18px;
+  color: #3d3028;
+}
+
+.product-details-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: #8b6a52;
+  margin-bottom: 20px;
+}
+
+.product-details-description {
+  color: #6b5a4f;
+  line-height: 1.8;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* Stock */
+
+.product-details-stock {
+  margin-bottom: 25px;
+}
+
+.stock-available {
+  color: #58705b;
+  font-weight: 600;
+}
+
+.stock-unavailable {
+  color: #a65c52;
+  font-weight: 600;
+}
+
+/* =========================================
+   ADD TO BRIDAL LIST
+========================================= */
+
+.add-to-bridal-list {
+  width: 100%;
+  min-height: 54px;
+  border: none;
+  border-radius: 14px;
+  background: #6b4f3f;
+  color: #fffaf4;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.add-to-bridal-list:hover {
+  background: #523b30;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(82, 59, 48, 0.18);
+}
+
+.add-icon {
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fffaf4;
+  color: #6b4f3f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 500;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .product-details-page {
+    padding: 20px 14px;
+    background: #f6f1e9;
+  }
+
+  .product-details-container {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .product-main-image {
+    height: 340px;
+    border-radius: 16px;
+  }
+
+  .product-details-info {
+    padding: 5px 4px 10px;
+  }
+
+  .product-details-info h1 {
+    font-size: 27px;
+    line-height: 1.3;
+  }
+
+  .product-details-price {
+    font-size: 24px;
+  }
+
+  .product-details-description {
+    font-size: 15px;
+  }
+
+  .add-to-bridal-list {
+    min-height: 58px;
+    font-size: 16px;
+    border-radius: 14px;
+  }
+
+  .add-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 24px;
+  }
+
+  .gallery-arrow {
+    width: 38px;
+    height: 38px;
+    font-size: 27px;
+  }
+
+  .gallery-arrow-left {
+    left: 10px;
+  }
+
+  .gallery-arrow-right {
+    right: 10px;
+  }
 }

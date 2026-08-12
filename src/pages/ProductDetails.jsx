@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
+import { useBridalList } from "../context/BridalListContext";
 import { supabase } from "../lib/supabase";
 
 function ProductDetails() {
   const { id } = useParams();
   const { language } = useLanguage();
+  const { addToList } = useBridalList();
 
   const [product, setProduct] = useState(null);
   const [images, setImages] = useState([]);
@@ -93,7 +95,7 @@ function ProductDetails() {
 
       const allImages = [];
 
-      // Main image from products table
+      // Main image
       if (productData.image_url) {
         allImages.push({
           id: "main",
@@ -104,11 +106,7 @@ function ProductDetails() {
       // Additional images
       if (productImages) {
         productImages.forEach((image) => {
-          // Prevent duplicate main image
-          if (
-            image.image_url !==
-            productData.image_url
-          ) {
+          if (image.image_url !== productData.image_url) {
             allImages.push(image);
           }
         });
@@ -116,16 +114,11 @@ function ProductDetails() {
 
       setImages(allImages);
       setCurrentImage(0);
-
     } catch (err) {
-      console.error(
-        "Product details error:",
-        err
-      );
+      console.error("Product details error:", err);
 
       setError(
-        err.message ||
-        "Could not load product."
+        err.message || "Could not load product."
       );
     } finally {
       setLoading(false);
@@ -189,12 +182,22 @@ function ProductDetails() {
   }, [images.length]);
 
   // ==========================================
+  // ADD TO BRIDAL LIST
+  // ==========================================
+
+  function handleAddToBridalList() {
+    if (!product) return;
+
+    addToList(product);
+  }
+
+  // ==========================================
   // LOADING
   // ==========================================
 
   if (loading) {
     return (
-      <main>
+      <main className="product-details-page">
         <div className="empty-category">
           <p>
             {language === "en"
@@ -212,7 +215,7 @@ function ProductDetails() {
 
   if (error) {
     return (
-      <main>
+      <main className="product-details-page">
         <div className="empty-category">
           <p>{error}</p>
         </div>
@@ -226,7 +229,7 @@ function ProductDetails() {
 
   if (!product) {
     return (
-      <main>
+      <main className="product-details-page">
         <div className="empty-category">
           <p>
             {language === "en"
@@ -269,7 +272,6 @@ function ProductDetails() {
       ======================================== */}
 
       <div className="product-details-back">
-
         <Link
           to={`/category/${product.category_id}`}
         >
@@ -278,11 +280,10 @@ function ProductDetails() {
             ? "Back to Category"
             : "العودة إلى القسم"}
         </Link>
-
       </div>
 
       {/* ========================================
-          PRODUCT
+          PRODUCT CONTAINER
       ======================================== */}
 
       <div className="product-details-container">
@@ -298,7 +299,6 @@ function ProductDetails() {
           <div className="product-main-image">
 
             {images.length > 0 ? (
-
               <img
                 src={
                   images[currentImage]
@@ -306,21 +306,17 @@ function ProductDetails() {
                 }
                 alt={name}
               />
-
             ) : (
-
               <div className="no-product-image">
                 {language === "en"
                   ? "No Image"
                   : "لا توجد صورة"}
               </div>
-
             )}
 
             {/* LEFT BUTTON */}
 
             {images.length > 1 && (
-
               <button
                 type="button"
                 className="gallery-arrow gallery-arrow-left"
@@ -329,13 +325,11 @@ function ProductDetails() {
               >
                 ‹
               </button>
-
             )}
 
             {/* RIGHT BUTTON */}
 
             {images.length > 1 && (
-
               <button
                 type="button"
                 className="gallery-arrow gallery-arrow-right"
@@ -344,42 +338,31 @@ function ProductDetails() {
               >
                 ›
               </button>
-
             )}
 
             {/* IMAGE COUNTER */}
 
             {images.length > 1 && (
-
               <div className="image-counter">
                 {currentImage + 1} /{" "}
                 {images.length}
               </div>
-
             )}
 
             {/* AVAILABILITY */}
 
             {product.available ? (
-
               <span className="available product-availability">
-
                 {language === "en"
                   ? "Available"
                   : "متوفر"}
-
               </span>
-
             ) : (
-
               <span className="out-of-stock product-availability">
-
                 {language === "en"
                   ? "Out of Stock"
                   : "غير متوفر"}
-
               </span>
-
             )}
 
           </div>
@@ -389,43 +372,33 @@ function ProductDetails() {
           ==================================== */}
 
           {images.length > 1 && (
-
             <div className="product-thumbnails">
 
               {images.map(
                 (image, index) => (
-
                   <button
                     type="button"
                     key={image.id}
-                    className={
-                      `product-thumbnail ${
-                        currentImage === index
-                          ? "active"
-                          : ""
-                      }`
-                    }
+                    className={`product-thumbnail ${
+                      currentImage === index
+                        ? "active"
+                        : ""
+                    }`}
                     onClick={() =>
                       setCurrentImage(index)
                     }
                   >
-
                     <img
-                      src={
-                        image.image_url
-                      }
+                      src={image.image_url}
                       alt={`${name} ${
                         index + 1
                       }`}
                     />
-
                   </button>
-
                 )
               )}
 
             </div>
-
           )}
 
         </div>
@@ -447,9 +420,7 @@ function ProductDetails() {
 
           {/* NAME */}
 
-          <h1>
-            {name}
-          </h1>
+          <h1>{name}</h1>
 
           {/* PRICE */}
 
@@ -460,11 +431,9 @@ function ProductDetails() {
           {/* DESCRIPTION */}
 
           {description && (
-
             <p className="product-details-description">
               {description}
             </p>
-
           )}
 
           {/* AVAILABILITY */}
@@ -472,30 +441,43 @@ function ProductDetails() {
           <div className="product-details-stock">
 
             {product.available ? (
-
               <span className="stock-available">
-
                 ✓{" "}
                 {language === "en"
                   ? "Available"
                   : "متوفر"}
-
               </span>
-
             ) : (
-
               <span className="stock-unavailable">
-
                 ✕{" "}
                 {language === "en"
                   ? "Out of Stock"
                   : "غير متوفر"}
-
               </span>
-
             )}
 
           </div>
+
+          {/* ====================================
+              ADD TO BRIDAL LIST
+          ==================================== */}
+
+          <button
+            type="button"
+            className="add-to-bridal-list"
+            onClick={handleAddToBridalList}
+            disabled={!product.available}
+          >
+            <span className="add-icon">
+              +
+            </span>
+
+            <span>
+              {language === "en"
+                ? "Add to Bridal List"
+                : "إضافة إلى قائمة العروس"}
+            </span>
+          </button>
 
         </div>
 
