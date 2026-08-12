@@ -322,16 +322,19 @@ select {
   mobile-menu open
   then the .open rule below will show it.
 */
+/* =====================================================
+   MOBILE MENU
+===================================================== */
 
 .mobile-menu {
   display: none;
 }
 
+/* When menu is opened */
 .mobile-menu.open {
-  display: flex;
+  display: flex !important;
 
   position: absolute;
-
   top: 100%;
   left: 0;
   right: 0;
@@ -350,9 +353,10 @@ select {
 
   padding: 8px 0 15px;
 
-  z-index: 10000;
+  z-index: 999999;
 }
 
+/* Mobile menu links */
 .mobile-menu a {
   width: 100%;
 
@@ -382,6 +386,74 @@ select {
 .mobile-menu a:hover {
   background: #f6eee6;
   color: var(--primary);
+}
+
+
+/* =====================================================
+   MOBILE CHECKLIST LINK
+===================================================== */
+
+.mobile-checklist-link {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-list-count {
+  min-width: 23px;
+  height: 23px;
+
+  padding: 0 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--primary);
+  color: white;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   MOBILE LANGUAGE
+===================================================== */
+
+.mobile-language-btn {
+  width: calc(100% - 44px);
+
+  min-height: 48px;
+
+  margin: 14px 22px 3px;
+
+  padding: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #d8c8ba;
+  border-radius: 10px;
+
+  background: #f6eee6;
+  color: var(--text);
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.mobile-language-btn:hover {
+  background: #eadfd3;
 }
 
 

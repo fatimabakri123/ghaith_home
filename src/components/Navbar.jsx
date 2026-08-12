@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useBridalList } from "../context/BridalListContext";
 
@@ -8,28 +8,16 @@ function Navbar() {
   const { language, toggleLanguage, t } = useLanguage();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const location = useLocation();
 
   function closeMenu() {
     setMenuOpen(false);
-  }
-
-  function isActive(path) {
-    if (path === "/") {
-      return location.pathname === "/" || location.pathname === "/home";
-    }
-
-    return location.pathname.startsWith(path);
   }
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
 
-        {/* =========================
-            LOGO
-        ========================= */}
-
+        {/* LOGO */}
         <Link
           to="/"
           className="logo"
@@ -42,73 +30,50 @@ function Navbar() {
           />
         </Link>
 
-        {/* =========================
-            DESKTOP NAVIGATION
-        ========================= */}
-
+        {/* DESKTOP NAVIGATION */}
         <div className="nav-links">
 
-          <Link
-            to="/home"
-            className={isActive("/home") ? "active" : ""}
-            onClick={closeMenu}
-          >
+          <Link to="/home" onClick={closeMenu}>
             {t.nav.home}
           </Link>
 
-          <Link
-            to="/categories"
-            className={isActive("/categories") ? "active" : ""}
-            onClick={closeMenu}
-          >
+          <Link to="/categories" onClick={closeMenu}>
             {t.nav.categories}
           </Link>
 
-          <Link
-            to="/checklist"
-            className={isActive("/checklist") ? "active" : ""}
-            onClick={closeMenu}
-          >
+          <Link to="/checklist" onClick={closeMenu}>
             {t.nav.checklist}
           </Link>
 
         </div>
 
-        {/* =========================
-            RIGHT ACTIONS
-        ========================= */}
-
+        {/* RIGHT SIDE */}
         <div className="nav-actions">
 
-          {/* Language */}
-
+          {/* DESKTOP LANGUAGE */}
           <button
-            type="button"
             className="language-btn"
             onClick={toggleLanguage}
           >
             {language === "en" ? "العربية" : "English"}
           </button>
 
-          {/* Bridal List */}
-
+          {/* BRIDAL LIST */}
           <Link
             to="/checklist"
             className="cart-btn"
             onClick={closeMenu}
-            aria-label="Bridal checklist"
           >
             🛍️
 
-            {list && list.length > 0 && (
+            {list.length > 0 && (
               <span className="cart-count">
                 {list.length}
               </span>
             )}
           </Link>
 
-          {/* Mobile Button */}
-
+          {/* MOBILE MENU BUTTON */}
           <button
             type="button"
             className="mobile-menu-btn"
@@ -120,18 +85,15 @@ function Navbar() {
           </button>
 
         </div>
+
       </div>
 
-      {/* =========================
-          MOBILE MENU
-      ========================= */}
-
+      {/* MOBILE MENU */}
       {menuOpen && (
-        <div className="mobile-menu">
+        <div className="mobile-menu open">
 
           <Link
-            to="/"
-            className={isActive("/") ? "active" : ""}
+            to="/home"
             onClick={closeMenu}
           >
             {t.nav.home}
@@ -139,7 +101,6 @@ function Navbar() {
 
           <Link
             to="/categories"
-            className={isActive("/categories") ? "active" : ""}
             onClick={closeMenu}
           >
             {t.nav.categories}
@@ -147,13 +108,16 @@ function Navbar() {
 
           <Link
             to="/checklist"
-            className={isActive("/checklist") ? "active" : ""}
             onClick={closeMenu}
           >
             {t.nav.checklist}
-          </Link>
 
-          {/* Mobile Language */}
+            {list.length > 0 && (
+              <span className="mobile-list-count">
+                {list.length}
+              </span>
+            )}
+          </Link>
 
           <button
             type="button"
@@ -168,6 +132,7 @@ function Navbar() {
 
         </div>
       )}
+
     </nav>
   );
 }
