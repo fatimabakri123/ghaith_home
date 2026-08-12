@@ -110,11 +110,46 @@ function Checklist() {
               ${total.toFixed(2)}
             </h1>
 
-            <button className="request-button">
-              {language === "en"
-                ? "Send Request To Store"
-                : "إرسال الطلب للمحل"}
-            </button>
+<button
+  className="request-button"
+  onClick={() => {
+    const phoneNumber = "96171523197"; 
+
+    const message =
+      language === "en"
+        ? `Hello! I would like to request the following bridal items:
+
+${list
+  .map(
+    (product) => `🛍️ ${product.name_en}
+💰 Price: $${product.price}
+🖼️ Image: ${product.image_url}`
+  )
+  .join("\n\n")}
+
+💵 Estimated Total: $${total.toFixed(2)}`
+        : `مرحباً! أريد طلب المنتجات التالية:
+
+${list
+  .map(
+    (product) => `🛍️ ${product.name_ar}
+💰 السعر: $${product.price}
+🖼️ الصورة: ${product.image_url}`
+  )
+  .join("\n\n")}
+
+💵 المجموع التقريبي: $${total.toFixed(2)}`;
+
+    window.open(
+      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
+  }}
+>
+  {language === "en"
+    ? "Send Request To Store"
+    : "إرسال الطلب للمحل"}
+</button>
 
           </div>
 
