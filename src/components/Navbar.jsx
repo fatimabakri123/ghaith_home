@@ -52,12 +52,7 @@ function Navbar() {
             {t.nav.checklist}
           </Link>
 
-          <Link
-            to="/about"
-            onClick={closeMenu}
-          >
-            {t.nav.about}
-          </Link>
+         
 
         </div>
 
@@ -129,12 +124,7 @@ function Navbar() {
             {t.nav.checklist}
           </Link>
 
-          <Link
-            to="/about"
-            onClick={closeMenu}
-          >
-            {t.nav.about}
-          </Link>
+         
 
           {/* Mobile Language */}
           <button

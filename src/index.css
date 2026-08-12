@@ -3333,3 +3333,136 @@ body {
   border-radius: 50%;
   display: block;
 }
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+  width: 100%;
+  background: #f6f1e9;
+  position: relative;
+  z-index: 1000;
+}
+
+.navbar-container {
+  width: 100%;
+  min-height: 110px;
+  padding: 10px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-image {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+/* =========================
+   NAV LINKS
+========================= */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 45px;
+}
+
+.nav-links a {
+  color: #3d3028;
+  text-decoration: none;
+  font-size: 21px;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #9b7653;
+}
+
+/* =========================
+   RIGHT SIDE
+========================= */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+/* Language */
+
+.language-btn {
+  background: transparent;
+  border: none;
+  color: #3d3028;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 15px;
+}
+
+/* Bridal List */
+
+.cart-btn {
+  position: relative;
+  text-decoration: none;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Number */
+
+.cart-count {
+  position: absolute;
+  top: -10px;
+  right: -12px;
+  background: #9b7653;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================
+   MOBILE BUTTON
+========================= */
+
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 32px;
+  color: #3d3028;
+  cursor: pointer;
+}
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+.mobile-menu {
+  display: none;
+}
