@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Hero from "../components/Hero";
 import CategoryCard from "../components/CategoryCard";
@@ -14,14 +13,11 @@ function Home() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
 
-  const [loadingCategories, setLoadingCategories] =
-    useState(true);
-
-  const [loadingProducts, setLoadingProducts] =
-    useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
   // ==========================================
-  // FETCH CATEGORIES
+  // FETCH DATA
   // ==========================================
 
   useEffect(() => {
@@ -29,31 +25,25 @@ function Home() {
     fetchProducts();
   }, []);
 
+  // ==========================================
+  // FETCH CATEGORIES
+  // ==========================================
+
   async function fetchCategories() {
     setLoadingCategories(true);
 
     const { data, error } = await supabase
       .from("categories")
-      .select(
-        "id, name_en, name_ar, image_url"
-      )
+      .select("id, name_en, name_ar, image_url")
       .order("id", {
         ascending: true,
       });
 
     if (error) {
-      console.error(
-        "Customer categories error:",
-        error
-      );
-
+      console.error("Customer categories error:", error);
       setCategories([]);
     } else {
-      console.log(
-        "Customer categories:",
-        data
-      );
-
+      console.log("Customer categories:", data);
       setCategories(data || []);
     }
 
@@ -91,13 +81,10 @@ function Home() {
       });
 
     if (error) {
-      console.error(
-        "Customer products error:",
-        error
-      );
-
+      console.error("Customer products error:", error);
       setProducts([]);
     } else {
+      console.log("Customer products:", data);
       setProducts(data || []);
     }
 
@@ -105,20 +92,36 @@ function Home() {
   }
 
   // ==========================================
-  // CONVERT SUPABASE CATEGORY
-  // TO CATEGORYCARD FORMAT
+  // CONVERT CATEGORY
   // ==========================================
 
   function formatCategory(category) {
     return {
       id: category.id,
+
       name: {
         en: category.name_en,
         ar: category.name_ar,
       },
+
       image: category.image_url,
       image_url: category.image_url,
     };
+  }
+
+  // ==========================================
+  // SCROLL TO SECTION
+  // ==========================================
+
+  function scrollToSection(id) {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   }
 
   return (
@@ -128,13 +131,19 @@ function Home() {
           HERO
       ======================================== */}
 
-      <Hero />
+      <section id="home">
+        <Hero />
+      </section>
+
 
       {/* ========================================
           CATEGORIES
       ======================================== */}
 
-      <section className="categories-section">
+      <section
+        id="categories"
+        className="categories-section"
+      >
 
         <SectionTitle
           title={t.categories.title}
@@ -143,7 +152,7 @@ function Home() {
 
         {loadingCategories ? (
 
-          <p>
+          <p className="section-message">
             {language === "en"
               ? "Loading categories..."
               : "جاري تحميل الأقسام..."}
@@ -151,7 +160,7 @@ function Home() {
 
         ) : categories.length === 0 ? (
 
-          <p>
+          <p className="section-message">
             {language === "en"
               ? "No categories available."
               : "لا توجد أقسام متاحة."}
@@ -176,11 +185,15 @@ function Home() {
 
       </section>
 
+
       {/* ========================================
           FEATURED PRODUCTS
       ======================================== */}
 
-      <section className="featured-products-section">
+      <section
+        id="products"
+        className="featured-products-section"
+      >
 
         <SectionTitle
           title={
@@ -195,7 +208,7 @@ function Home() {
 
         {loadingProducts ? (
 
-          <p>
+          <p className="section-message">
             {language === "en"
               ? "Loading products..."
               : "جاري تحميل المنتجات..."}
@@ -203,7 +216,7 @@ function Home() {
 
         ) : products.length === 0 ? (
 
-          <p>
+          <p className="section-message">
             {language === "en"
               ? "No products available."
               : "لا توجد منتجات متاحة."}
@@ -230,11 +243,15 @@ function Home() {
 
       </section>
 
+
       {/* ========================================
           BRIDAL CHECKLIST
       ======================================== */}
 
-      <section className="checklist-banner">
+      <section
+        id="checklist"
+        className="checklist-banner"
+      >
 
         <div className="checklist-content">
 
@@ -259,9 +276,38 @@ function Home() {
 
       </section>
 
+
+      {/* ========================================
+          OPTIONAL NAVIGATION HELP
+      ======================================== */}
+
+      <div className="home-section-navigation">
+
+        <button
+          type="button"
+          onClick={() => scrollToSection("categories")}
+        >
+          Categories
+        </button>
+
+        <button
+          type="button"
+          onClick={() => scrollToSection("products")}
+        >
+          Products
+        </button>
+
+        <button
+          type="button"
+          onClick={() => scrollToSection("checklist")}
+        >
+          Checklist
+        </button>
+
+      </div>
+
     </main>
   );
 }
 
 export default Home;
-
