@@ -3131,3 +3131,250 @@ select {
 [dir="rtl"] .mobile-checklist-link {
   flex-direction: row;
 }
+
+/* =====================================================
+   MULTIPLE PRODUCT IMAGES PREVIEW
+===================================================== */
+
+.selected-images {
+  width: 100%;
+
+  margin-top: 18px;
+
+  padding: 18px;
+
+  background: var(--soft-bg);
+
+  border: 1px solid var(--border);
+
+  border-radius: 16px;
+}
+
+.selected-images > p {
+  margin-bottom: 15px;
+
+  color: var(--text);
+
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   IMAGES GRID
+===================================================== */
+
+.selected-images-list {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 15px;
+
+  width: 100%;
+}
+
+
+/* =====================================================
+   SINGLE IMAGE
+===================================================== */
+
+.selected-image-item {
+  min-width: 0;
+
+  text-align: center;
+}
+
+.selected-image-item > p {
+  margin-top: 8px;
+
+  color: var(--text-light);
+
+  font-size: 12px;
+
+  line-height: 1.4;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =====================================================
+   IMAGE PREVIEW
+===================================================== */
+
+.image-preview-wrapper {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 1 / 1;
+
+  overflow: hidden;
+
+  border-radius: 14px;
+
+  background: #eee5da;
+
+  border: 1px solid var(--border);
+
+  box-shadow: var(--shadow-sm);
+}
+
+.image-preview-wrapper img {
+  width: 100%;
+
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition: transform 0.3s ease;
+}
+
+.image-preview-wrapper:hover img {
+  transform: scale(1.06);
+}
+
+
+/* =====================================================
+   MAIN IMAGE BADGE
+===================================================== */
+
+.main-image-badge {
+  position: absolute;
+
+  top: 8px;
+
+  left: 8px;
+
+  z-index: 2;
+
+  padding: 5px 9px;
+
+  background: var(--primary);
+
+  color: white;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  box-shadow: 0 3px 10px rgba(103, 73, 55, 0.15);
+}
+
+
+/* =====================================================
+   REMOVE IMAGE BUTTON
+===================================================== */
+
+.remove-image-button {
+  position: absolute;
+
+  top: 7px;
+
+  right: 7px;
+
+  z-index: 3;
+
+  width: 30px;
+
+  height: 30px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  background: rgba(77, 59, 50, 0.85);
+
+  color: white;
+
+  font-size: 22px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.remove-image-button:hover {
+  background: var(--danger);
+
+  transform: scale(1.1);
+}
+
+
+/* =====================================================
+   MULTIPLE IMAGES - TABLET
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .selected-images-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+  }
+
+  .selected-images {
+    padding: 14px;
+  }
+
+}
+
+
+/* =====================================================
+   MULTIPLE IMAGES - MOBILE
+===================================================== */
+
+@media (max-width: 500px) {
+
+  .selected-images-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+  }
+
+  .main-image-badge {
+    top: 6px;
+
+    left: 6px;
+
+    padding: 4px 7px;
+
+    font-size: 9px;
+  }
+
+  .remove-image-button {
+    top: 6px;
+
+    right: 6px;
+
+    width: 28px;
+
+    height: 28px;
+
+    font-size: 20px;
+  }
+
+  .selected-image-item > p {
+    font-size: 11px;
+  }
+
+}
