@@ -15,6 +15,7 @@ import AdminDashboard from "./admin/AdminDashboard";
 import ProtectedAdminRoute from "./admin/ProtectedAdminRoute";
 import AdminProducts from "./admin/AdminProducts";
 import AddProduct from "./admin/AddProduct";
+import AdminCategories from "./admin/AdminCategories";
 
 function Offers() {
   return <div>Offers</div>;
@@ -125,7 +126,10 @@ function AppContent() {
           path="/owner/login"
           element={<div>Owner Login</div>}
         />
-
+<Route
+  path="/admin/categories"
+  element={<AdminCategories />}
+/>
       </Routes>
     </>
   );

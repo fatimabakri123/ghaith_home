@@ -45,12 +45,7 @@ function AdminDashboard() {
         </button>
 
 
-        <button
-          onClick={() => navigate("/admin/orders")}
-        >
-          📦
-          <span>Orders</span>
-        </button>
+       
 
 
         <button

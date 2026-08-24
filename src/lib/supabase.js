@@ -5,9 +5,9 @@ export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
   {
     auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
     },
   }
 );

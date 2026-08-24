@@ -21,24 +21,24 @@ function AdminLogin() {
     setLoading(true);
 
 
-    const { data, error } =
-      await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+  const { data, error } =
+  await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
+if (error) {
+  console.error("LOGIN ERROR:", error);
 
-    if (error) {
+  setError("Invalid email or password.");
+  setLoading(false);
+  return;
+}
 
-      setError("Invalid email or password.");
+console.log("LOGIN SESSION:", data.session);
+console.log("LOGIN USER:", data.user);
 
-      setLoading(false);
-
-      return;
-    }
-
-
-    const user = data.user;
+const user = data.user;
 
 
     const { data: profile, error: profileError } =
