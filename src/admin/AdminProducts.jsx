@@ -21,6 +21,14 @@ function AdminProducts() {
   const [currentImages, setCurrentImages] = useState({});
 
   // ==========================================
+  // EDIT IMAGE FILES
+  // ==========================================
+
+  const [mainImageFile, setMainImageFile] = useState(null);
+  const [additionalImageFiles, setAdditionalImageFiles] = useState([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
+
+  // ==========================================
   // FETCH PRODUCTS
   // ==========================================
 
@@ -98,9 +106,6 @@ function AdminProducts() {
           "Product images error:",
           imagesError
         );
-
-        // Don't stop loading products
-        // if additional images fail
       }
 
       // ========================================
@@ -111,10 +116,7 @@ function AdminProducts() {
         (productsData || []).map((product) => {
           const images = [];
 
-          // -----------------------------
           // MAIN IMAGE
-          // -----------------------------
-
           if (product.image_url) {
             images.push({
               id: `main-${product.id}`,
@@ -123,10 +125,7 @@ function AdminProducts() {
             });
           }
 
-          // -----------------------------
           // ADDITIONAL IMAGES
-          // -----------------------------
-
           const productAdditionalImages =
             (additionalImages || []).filter(
               (image) =>
@@ -136,7 +135,6 @@ function AdminProducts() {
 
           productAdditionalImages.forEach(
             (image) => {
-              // Avoid duplicate image
               if (
                 image.image_url &&
                 !images.some(
@@ -180,7 +178,6 @@ function AdminProducts() {
       );
 
       setCurrentImages(initialImages);
-
     } catch (err) {
       console.error(
         "Fetch products unexpected error:",
@@ -287,6 +284,9 @@ function AdminProducts() {
         product.subcategory || "",
     });
 
+    setMainImageFile(null);
+    setAdditionalImageFiles([]);
+
     setShowEditModal(true);
   }
 
@@ -299,6 +299,9 @@ function AdminProducts() {
 
     setShowEditModal(false);
     setEditingProduct(null);
+
+    setMainImageFile(null);
+    setAdditionalImageFiles([]);
   }
 
   // ==========================================
@@ -324,6 +327,132 @@ function AdminProducts() {
   }
 
   // ==========================================
+  // MAIN IMAGE SELECT
+  // ==========================================
+
+  function handleMainImageChange(e) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    setMainImageFile(file);
+  }
+
+  // ==========================================
+  // ADDITIONAL IMAGES SELECT
+  // ==========================================
+
+  function handleAdditionalImagesChange(e) {
+    const files = Array.from(
+      e.target.files || []
+    );
+
+    if (!files.length) return;
+
+    setAdditionalImageFiles(
+      (previous) => [
+        ...previous,
+        ...files,
+      ]
+    );
+
+    // Allow selecting the same file again
+    e.target.value = "";
+  }
+
+  // ==========================================
+  // REMOVE SELECTED ADDITIONAL IMAGE
+  // ==========================================
+
+  function removeSelectedAdditionalImage(
+    index
+  ) {
+    setAdditionalImageFiles(
+      (previous) =>
+        previous.filter(
+          (_, i) => i !== index
+        )
+    );
+  }
+
+  // ==========================================
+  // UPLOAD IMAGE TO SUPABASE STORAGE
+  // ==========================================
+
+  async function uploadImage(
+    file,
+    productId
+  ) {
+    if (!file) return null;
+
+    const fileExt =
+      file.name
+        .split(".")
+        .pop()
+        ?.toLowerCase() || "jpg";
+
+    const fileName =
+      `${productId}-${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2)}.${fileExt}`;
+
+    const filePath =
+      `products/${productId}/${fileName}`;
+
+    console.log(
+      "Uploading image:",
+      filePath
+    );
+
+    const {
+      error: uploadError,
+    } = await supabase.storage
+      .from("product-images")
+      .upload(
+        filePath,
+        file,
+        {
+          cacheControl: "3600",
+          upsert: false,
+          contentType:
+            file.type || "image/jpeg",
+        }
+      );
+
+    if (uploadError) {
+      console.error(
+        "IMAGE UPLOAD ERROR:",
+        uploadError
+      );
+
+      throw uploadError;
+    }
+
+    const {
+      data: publicUrlData,
+    } =
+      supabase.storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+    if (
+      !publicUrlData ||
+      !publicUrlData.publicUrl
+    ) {
+      throw new Error(
+        "Could not get public image URL."
+      );
+    }
+
+    console.log(
+      "IMAGE UPLOADED:",
+      publicUrlData.publicUrl
+    );
+
+    return publicUrlData.publicUrl;
+  }
+
+  // ==========================================
   // SAVE EDIT
   // ==========================================
 
@@ -333,6 +462,7 @@ function AdminProducts() {
     if (!editingProduct) return;
 
     setSaving(true);
+    setUploadingImages(true);
     setError("");
 
     try {
@@ -354,8 +484,36 @@ function AdminProducts() {
         id
       );
 
+      // ======================================
+      // MAIN IMAGE
+      // ======================================
+
+      let finalMainImageUrl =
+        image_url || "";
+
+      if (mainImageFile) {
+        console.log(
+          "Uploading new main image..."
+        );
+
+        const uploadedMainImage =
+          await uploadImage(
+            mainImageFile,
+            id
+          );
+
+        if (uploadedMainImage) {
+          finalMainImageUrl =
+            uploadedMainImage;
+        }
+      }
+
+      // ======================================
+      // UPDATE PRODUCT
+      // ======================================
+
       const {
-        error,
+        error: updateError,
       } = await supabase
         .from("products")
         .update({
@@ -363,39 +521,90 @@ function AdminProducts() {
           name_ar,
           description_en,
           description_ar,
-          price: Number(price),
-          image_url,
+
+          price:
+            Number(price),
+
+          image_url:
+            finalMainImageUrl,
+
           available,
+
           category_id:
             category_id
               ? Number(category_id)
               : null,
-          subcategory,
+
+          subcategory:
+            subcategory || null,
         })
         .eq("id", id);
 
-      if (error) {
+      if (updateError) {
         console.error(
           "UPDATE PRODUCT ERROR:",
-          error
+          updateError
         );
 
-        setError(error.message);
-
-        alert(
-          `Could not update product.\n\n${error.message}`
-        );
-
-        setSaving(false);
-        return;
+        throw updateError;
       }
 
-      console.log(
-        "PRODUCT UPDATED SUCCESSFULLY:",
-        id
-      );
+      // ======================================
+      // ADDITIONAL IMAGES
+      // ======================================
+
+      if (
+        additionalImageFiles.length >
+        0
+      ) {
+        console.log(
+          "Uploading additional images..."
+        );
+
+        for (
+          const file of
+          additionalImageFiles
+        ) {
+          const uploadedUrl =
+            await uploadImage(
+              file,
+              id
+            );
+
+          if (!uploadedUrl) {
+            continue;
+          }
+
+          const {
+            error:
+              insertImageError,
+          } = await supabase
+            .from("product_images")
+            .insert({
+              product_id: id,
+              image_url:
+                uploadedUrl,
+            });
+
+          if (insertImageError) {
+            console.error(
+              "INSERT ADDITIONAL IMAGE ERROR:",
+              insertImageError
+            );
+
+            throw insertImageError;
+          }
+        }
+      }
+
+      // ======================================
+      // REFRESH
+      // ======================================
 
       await fetchProducts();
+
+      setMainImageFile(null);
+      setAdditionalImageFiles([]);
 
       setShowEditModal(false);
       setEditingProduct(null);
@@ -403,19 +612,27 @@ function AdminProducts() {
       alert(
         "Product updated successfully!"
       );
-
     } catch (error) {
       console.error(
         "UNEXPECTED UPDATE ERROR:",
         error
       );
 
-      alert(
-        `Something went wrong.\n\n${error.message}`
+      setError(
+        error.message ||
+          "Could not update product."
       );
-    }
 
-    setSaving(false);
+      alert(
+        `Could not update product.\n\n${
+          error.message ||
+          "Unknown error"
+        }`
+      );
+    } finally {
+      setSaving(false);
+      setUploadingImages(false);
+    }
   }
 
   // ==========================================
@@ -449,7 +666,10 @@ function AdminProducts() {
       } = await supabase
         .from("product_images")
         .delete()
-        .eq("product_id", product.id);
+        .eq(
+          "product_id",
+          product.id
+        );
 
       if (imagesDeleteError) {
         console.error(
@@ -499,7 +719,6 @@ function AdminProducts() {
       alert(
         "Product deleted successfully!"
       );
-
     } catch (error) {
       console.error(
         "Unexpected delete error:",
@@ -533,8 +752,8 @@ function AdminProducts() {
 
         <button
           onClick={() =>
-            window.location.href =
-              "/admin/products/add"
+            (window.location.href =
+              "/admin/products/add")
           }
         >
           + Add Product
@@ -568,7 +787,6 @@ function AdminProducts() {
 
       {!loading &&
         products.length === 0 && (
-
           <div className="empty-products">
 
             <h2>
@@ -582,8 +800,8 @@ function AdminProducts() {
 
             <button
               onClick={() =>
-                window.location.href =
-                  "/admin/products/add"
+                (window.location.href =
+                  "/admin/products/add")
               }
             >
               Add Your First Product
@@ -598,7 +816,6 @@ function AdminProducts() {
 
       {!loading &&
         products.length > 0 && (
-
           <div className="products-grid">
 
             {products.map((product) => {
@@ -617,7 +834,6 @@ function AdminProducts() {
                 product.image_url;
 
               return (
-
                 <div
                   className="admin-product-card"
                   key={product.id}
@@ -630,7 +846,6 @@ function AdminProducts() {
                   <div className="product-image">
 
                     {currentImage ? (
-
                       <div
                         style={{
                           position:
@@ -639,15 +854,16 @@ function AdminProducts() {
                         }}
                       >
 
-                        {/* MAIN IMAGE */}
-
                         <img
-                          src={currentImage}
+                          src={
+                            currentImage
+                          }
                           alt={
                             product.name_en
                           }
                           style={{
-                            width: "100%",
+                            width:
+                              "100%",
                             height:
                               "250px",
                             objectFit:
@@ -657,11 +873,10 @@ function AdminProducts() {
                           }}
                         />
 
-                        {/* ==================================
-                            ARROWS
-                        ================================== */}
+                        {/* ARROWS */}
 
-                        {images.length > 1 && (
+                        {images.length >
+                          1 && (
                           <>
                             <button
                               type="button"
@@ -741,11 +956,10 @@ function AdminProducts() {
                           </>
                         )}
 
-                        {/* ==================================
-                            IMAGE COUNT
-                        ================================== */}
+                        {/* IMAGE COUNT */}
 
-                        {images.length > 1 && (
+                        {images.length >
+                          1 && (
                           <div
                             style={{
                               position:
@@ -777,13 +991,10 @@ function AdminProducts() {
                         )}
 
                       </div>
-
                     ) : (
-
                       <div className="no-image">
                         No Image
                       </div>
-
                     )}
 
                   </div>
@@ -792,8 +1003,8 @@ function AdminProducts() {
                       THUMBNAILS
                   ================================== */}
 
-                  {images.length > 1 && (
-
+                  {images.length >
+                    1 && (
                     <div
                       style={{
                         display:
@@ -813,7 +1024,6 @@ function AdminProducts() {
                           image,
                           index
                         ) => (
-
                           <button
                             type="button"
                             key={
@@ -864,12 +1074,10 @@ function AdminProducts() {
                             />
 
                           </button>
-
                         )
                       )}
 
                     </div>
-
                   )}
 
                   {/* ==================================
@@ -904,9 +1112,7 @@ function AdminProducts() {
                       ${product.price}
                     </strong>
 
-                    {/* ==================================
-                        AVAILABILITY
-                    ================================== */}
+                    {/* AVAILABILITY */}
 
                     <p
                       style={{
@@ -925,11 +1131,10 @@ function AdminProducts() {
                         : "× Not Available"}
                     </p>
 
-                    {/* ==================================
-                        IMAGE COUNT
-                    ================================== */}
+                    {/* IMAGE COUNT */}
 
-                    {images.length > 0 && (
+                    {images.length >
+                      0 && (
                       <p
                         style={{
                           fontSize:
@@ -949,9 +1154,7 @@ function AdminProducts() {
                       </p>
                     )}
 
-                    {/* ==================================
-                        ACTIONS
-                    ================================== */}
+                    {/* ACTIONS */}
 
                     <div className="product-actions">
 
@@ -994,7 +1197,6 @@ function AdminProducts() {
 
       {showEditModal &&
         editingProduct && (
-
           <div
             className="edit-modal-overlay"
             onClick={closeEditModal}
@@ -1007,7 +1209,9 @@ function AdminProducts() {
               }
             >
 
-              {/* MODAL HEADER */}
+              {/* ==================================
+                  MODAL HEADER
+              ================================== */}
 
               <div className="edit-modal-header">
 
@@ -1036,7 +1240,9 @@ function AdminProducts() {
 
               </div>
 
-              {/* FORM */}
+              {/* ==================================
+                  FORM
+              ================================== */}
 
               <form
                 onSubmit={
@@ -1045,7 +1251,9 @@ function AdminProducts() {
                 className="edit-product-form"
               >
 
-                {/* ENGLISH NAME */}
+                {/* ==================================
+                    ENGLISH NAME
+                ================================== */}
 
                 <div className="form-group">
 
@@ -1068,7 +1276,9 @@ function AdminProducts() {
 
                 </div>
 
-                {/* ARABIC NAME */}
+                {/* ==================================
+                    ARABIC NAME
+                ================================== */}
 
                 <div className="form-group">
 
@@ -1092,7 +1302,9 @@ function AdminProducts() {
 
                 </div>
 
-                {/* ENGLISH DESCRIPTION */}
+                {/* ==================================
+                    ENGLISH DESCRIPTION
+                ================================== */}
 
                 <div className="form-group">
 
@@ -1115,7 +1327,9 @@ function AdminProducts() {
 
                 </div>
 
-                {/* ARABIC DESCRIPTION */}
+                {/* ==================================
+                    ARABIC DESCRIPTION
+                ================================== */}
 
                 <div className="form-group">
 
@@ -1139,7 +1353,9 @@ function AdminProducts() {
 
                 </div>
 
-                {/* PRICE */}
+                {/* ==================================
+                    PRICE
+                ================================== */}
 
                 <div className="form-group">
 
@@ -1163,29 +1379,217 @@ function AdminProducts() {
 
                 </div>
 
-                {/* MAIN IMAGE URL */}
+                {/* ==================================
+                    MAIN IMAGE UPLOAD
+                ================================== */}
 
                 <div className="form-group">
 
                   <label>
-                    Main Image URL
+                    Main Product Image
                   </label>
 
+                  {/* CURRENT MAIN IMAGE */}
+
+                  {editingProduct.image_url && (
+                    <div
+                      style={{
+                        marginBottom:
+                          "12px",
+                      }}
+                    >
+
+                      <img
+                        src={
+                          editingProduct.image_url
+                        }
+                        alt="Current product"
+                        style={{
+                          width:
+                            "140px",
+                          height:
+                            "140px",
+                          objectFit:
+                            "cover",
+                          borderRadius:
+                            "10px",
+                          border:
+                            "1px solid #ddd",
+                          display:
+                            "block",
+                        }}
+                      />
+
+                    </div>
+                  )}
+
                   <input
-                    type="text"
-                    name="image_url"
-                    value={
-                      editingProduct.image_url
-                    }
+                    type="file"
+                    accept="image/*"
                     onChange={
-                      handleEditChange
+                      handleMainImageChange
                     }
-                    placeholder="https://..."
                   />
+
+                  {mainImageFile && (
+                    <p
+                      style={{
+                        fontSize:
+                          "13px",
+                        color:
+                          "#777",
+                        marginTop:
+                          "6px",
+                      }}
+                    >
+                      Selected:{" "}
+                      {
+                        mainImageFile.name
+                      }
+                    </p>
+                  )}
 
                 </div>
 
-                {/* SUBCATEGORY */}
+                {/* ==================================
+                    ADDITIONAL IMAGES
+                ================================== */}
+
+                <div className="form-group">
+
+                  <label>
+                    Additional Product
+                    Images
+                  </label>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={
+                      handleAdditionalImagesChange
+                    }
+                  />
+
+                  <p
+                    style={{
+                      fontSize:
+                        "13px",
+                      color:
+                        "#777",
+                      marginTop:
+                        "6px",
+                    }}
+                  >
+                    You can select
+                    multiple images
+                    from your device.
+                  </p>
+
+                  {/* NEW IMAGE PREVIEWS */}
+
+                  {additionalImageFiles.length >
+                    0 && (
+                    <div
+                      style={{
+                        display:
+                          "flex",
+                        gap:
+                          "10px",
+                        flexWrap:
+                          "wrap",
+                        marginTop:
+                          "12px",
+                      }}
+                    >
+
+                      {additionalImageFiles.map(
+                        (
+                          file,
+                          index
+                        ) => {
+
+                          const preview =
+                            URL.createObjectURL(
+                              file
+                            );
+
+                          return (
+                            <div
+                              key={`${file.name}-${index}`}
+                              style={{
+                                position:
+                                  "relative",
+                              }}
+                            >
+
+                              <img
+                                src={
+                                  preview
+                                }
+                                alt=""
+                                style={{
+                                  width:
+                                    "90px",
+                                  height:
+                                    "90px",
+                                  objectFit:
+                                    "cover",
+                                  borderRadius:
+                                    "8px",
+                                  border:
+                                    "1px solid #ddd",
+                                }}
+                              />
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  removeSelectedAdditionalImage(
+                                    index
+                                  )
+                                }
+                                style={{
+                                  position:
+                                    "absolute",
+                                  top:
+                                    "-7px",
+                                  right:
+                                    "-7px",
+                                  width:
+                                    "24px",
+                                  height:
+                                    "24px",
+                                  borderRadius:
+                                    "50%",
+                                  border:
+                                    "none",
+                                  background:
+                                    "#c62828",
+                                  color:
+                                    "white",
+                                  cursor:
+                                    "pointer",
+                                  fontWeight:
+                                    "bold",
+                                }}
+                              >
+                                ×
+                              </button>
+
+                            </div>
+                          );
+                        }
+                      )}
+
+                    </div>
+                  )}
+
+                </div>
+
+                {/* ==================================
+                    SUBCATEGORY
+                ================================== */}
 
                 <div className="form-group">
 
@@ -1208,7 +1612,9 @@ function AdminProducts() {
 
                 </div>
 
-                {/* AVAILABLE */}
+                {/* ==================================
+                    AVAILABLE
+                ================================== */}
 
                 <div className="available-checkbox">
 
@@ -1235,7 +1641,9 @@ function AdminProducts() {
 
                 </div>
 
-                {/* BUTTONS */}
+                {/* ==================================
+                    BUTTONS
+                ================================== */}
 
                 <div className="edit-modal-actions">
 
@@ -1255,7 +1663,9 @@ function AdminProducts() {
                     className="save-edit-btn"
                     disabled={saving}
                   >
-                    {saving
+                    {uploadingImages
+                      ? "Uploading images..."
+                      : saving
                       ? "Saving..."
                       : "Save Changes"}
                   </button>
