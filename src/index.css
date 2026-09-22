@@ -4354,59 +4354,254 @@ select {
 /* =========================================================
    MOBILE
 ========================================================= */
+/* ==========================================
+   MOBILE ROLE PAGE
+========================================== */
 
-@media (max-width: 700px) {
-
+@media (max-width: 768px) {
   .role-page {
-    width: 100%;
-
     min-height: 100svh;
-
     height: auto;
-
     display: flex;
-
     flex-direction: column;
-
     overflow-x: hidden;
-
     overflow-y: auto;
-
-    background: var(--beige-main);
   }
 
+  /* -------------------------------
+     NAVBAR
+  ------------------------------- */
 
-  /* ---------------------------------------------------------
+  .role-navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 76px;
+    z-index: 20;
+
+    padding: 0 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: transparent;
+  }
+
+  .navbar-brand {
+    color: white;
+  }
+
+  .brand-main {
+    font-size: 20px;
+    letter-spacing: 4px;
+  }
+
+  .brand-sub {
+    font-size: 9px;
+    letter-spacing: 3px;
+  }
+
+  .navbar-links {
+    display: none;
+  }
+
+  .language-button {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  /* -------------------------------
      IMAGE
-  --------------------------------------------------------- */
+  ------------------------------- */
 
   .hero-background {
-    order: 1 !important;
+    position: relative;
+
+    order: 1;
 
     width: 100%;
-
     height: 52svh;
-
     min-height: 360px;
-
     max-height: 560px;
 
-    flex-shrink: 0;
-
+    background-image: url("/image/ghaith-home-hero.jpg");
     background-size: cover;
+    background-position: center center;
+
+    flex-shrink: 0;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.18),
+        rgba(0, 0, 0, 0.02) 45%,
+        rgba(0, 0, 0, 0.18)
+      );
+  }
+
+  /* -------------------------------
+     CONTENT
+  ------------------------------- */
+
+  .role-hero {
+    order: 2;
+
+    width: 100%;
+    min-height: auto;
+
+    margin: 0;
+
+    display: block;
+
+    background: linear-gradient(
+      180deg,
+      #faf7f2 0%,
+      #f4ede4 100%
+    );
+  }
+
+  .hero-content {
+    width: 100%;
+    max-width: none;
+
+    padding: 48px 24px 55px;
+
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    justify-content: center;
+
+    font-size: 11px;
+    letter-spacing: 2.5px;
+
+    margin-bottom: 18px;
+  }
+
+  .eyebrow-line {
+    display: none;
+  }
+
+  .hero-title {
+    margin: 0 auto;
+
+    max-width: 420px;
+
+    font-size: clamp(38px, 10vw, 54px);
+    line-height: 1.08;
+
+    color: #806b57;
+  }
+
+  .hero-description {
+    max-width: 390px;
+
+    margin: 22px auto 0;
+
+    font-size: 15px;
+    line-height: 1.75;
+
+    color: #9a8068;
+  }
+
+  /* -------------------------------
+     BUTTONS
+  ------------------------------- */
+
+  .hero-actions {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    margin-top: 32px;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+    min-height: 60px;
+
+    border-radius: 14px;
+
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .primary-button {
+    background: #9a8068;
+    color: white;
+    border: 1px solid #9a8068;
+  }
+
+  .secondary-button {
+    background: white;
+    color: #806b57;
+    border: 1px solid #d8c8b6;
+  }
+
+  /* -------------------------------
+     BOTTOM AREA
+  ------------------------------- */
+
+  .hero-bottom {
+    display: none;
+  }
+}
+
+
+/* ==========================================
+   SMALL PHONES
+========================================== */
+
+@media (max-width: 480px) {
+  .hero-background {
+    height: 48svh;
+    min-height: 330px;
 
     background-position: center center;
   }
 
-
-  .hero-overlay {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.08),
-        rgba(154, 128, 104, 0.04)
-      );
+  .hero-content {
+    padding: 40px 20px 45px;
   }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .hero-title {
+    font-size: 38px;
+  }
+
+  .hero-description {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    margin-top: 28px;
+  }
+
+  .primary-button,
+  .secondary-button {
+    min-height: 58px;
+  }
+}
 
 
   /* ---------------------------------------------------------
@@ -4700,7 +4895,7 @@ select {
   [dir="rtl"] .hero-actions {
     align-items: stretch;
   }
-}
+
 
 
 /* =========================================================
