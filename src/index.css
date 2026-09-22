@@ -733,55 +733,76 @@ select {
 /* =========================================================
    MOBILE CONTACT OPTIONS
 ========================================================= */
+@media (max-width: 700px) {
 
-.mobile-contact-options {
-  background: #ffffff;
+  .mobile-contact-options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 0 12px;
+  }
+
+  .mobile-contact-options button {
+    width: 100%;
+    min-height: 54px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 10px 15px;
+
+    border: 1px solid #e5d8ca;
+    border-radius: 13px;
+
+    background: #ffffff;
+
+    color: #806b57;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-contact-options button:active {
+    transform: scale(0.98);
+  }
+
+  .mobile-contact-options button span:first-child {
+    width: 32px;
+    height: 32px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f4ede5;
+
+    font-size: 16px;
+  }
+
+  .mobile-contact-options button span:nth-child(2) {
+    flex: 1;
+    text-align: left;
+  }
+
+  .mobile-contact-options button span:last-child {
+    font-size: 16px;
+    color: #b49a82;
+  }
+
 }
-
-
-.mobile-contact-options a {
-  min-height: 58px;
-
-  padding: 0 32px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 15px;
-
-  border-top: 1px solid #eee5dc;
-
-  color: #806b57;
-
-  text-decoration: none;
-
-  font-size: 10px;
-
-  letter-spacing: 1.3px;
-
-  text-transform: uppercase;
-}
-
-
-.mobile-contact-options a span:nth-child(1) {
-  color: #b89d82;
-
-  font-size: 17px;
-}
-
-
-.mobile-contact-options a span:nth-child(2) {
-  flex: 1;
-}
-
-
-.mobile-contact-options a span:last-child {
-  color: #b89d82;
-
-  font-size: 17px;
-}
-
 
 /* =========================================================
    MOBILE
@@ -8683,73 +8704,3 @@ select {
 
 
 
-@media (max-width: 700px) {
-
-  .mobile-contact-options {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 8px 0 12px;
-  }
-
-  .mobile-contact-options button {
-    width: 100%;
-    min-height: 54px;
-
-    display: flex;
-    align-items: center;
-    gap: 14px;
-
-    padding: 10px 15px;
-
-    border: 1px solid #e5d8ca;
-    border-radius: 13px;
-
-    background: #ffffff;
-
-    color: #806b57;
-
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-
-    cursor: pointer;
-
-    box-sizing: border-box;
-
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .mobile-contact-options button:active {
-    transform: scale(0.98);
-  }
-
-  .mobile-contact-options button span:first-child {
-    width: 32px;
-    height: 32px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: #f4ede5;
-
-    font-size: 16px;
-  }
-
-  .mobile-contact-options button span:nth-child(2) {
-    flex: 1;
-    text-align: left;
-  }
-
-  .mobile-contact-options button span:last-child {
-    font-size: 16px;
-    color: #b49a82;
-  }
-
-}
