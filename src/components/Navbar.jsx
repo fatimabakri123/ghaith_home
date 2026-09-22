@@ -8,7 +8,8 @@ function Navbar() {
   const { language, toggleLanguage, t } = useLanguage();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
+ const [contactOpen, setContactOpen] = useState(false);
+const [mobileContactOpen, setMobileContactOpen] = useState(false);
 
   const contactRef = useRef(null);
 
@@ -16,10 +17,11 @@ function Navbar() {
   // CLOSE MOBILE MENU
   // ==========================================
 
-  function closeMenu() {
-    setMenuOpen(false);
-    setContactOpen(false);
-  }
+ function closeMenu() {
+  setMenuOpen(false);
+  setContactOpen(false);
+  setMobileContactOpen(false);
+}
 
   // ==========================================
   // TOGGLE CONTACT DROPDOWN
@@ -371,78 +373,80 @@ function Navbar() {
             MOBILE CONTACT
         ========================================== */}
 
-        <div className="mobile-contact-section">
+       <div className="mobile-contact-section">
 
-          <button
-            type="button"
-            className="mobile-contact-btn"
-            onClick={toggleContact}
-          >
-            <span>
-              Contact Us
-            </span>
+  <button
+    type="button"
+    className="mobile-contact-btn"
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-            <span>
-              {contactOpen ? "↑" : "↓"}
-            </span>
-          </button>
+      setMobileContactOpen((prev) => !prev);
+    }}
+  >
+    <span>Contact Us</span>
 
-          {contactOpen && (
-            <div className="mobile-contact-options">
+    <span className="mobile-contact-chevron">
+      {mobileContactOpen ? "↑" : "↓"}
+    </span>
+  </button>
 
-              {/* INSTAGRAM */}
 
-              <a
-                href="https://www.instagram.com/ghaith._.home/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mobile-contact-option"
-                onClick={() => {
-                  setMenuOpen(false);
-                  setContactOpen(false);
-                }}
-              >
-                <span className="mobile-contact-icon">
-                  ◎
-                </span>
+  {mobileContactOpen && (
+    <div className="mobile-contact-options">
 
-                <span className="mobile-contact-name">
-                  Instagram
-                </span>
+      <a
+        href="https://www.instagram.com/ghaith._.home/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mobile-contact-option"
+        onClick={() => {
+          setMobileContactOpen(false);
+          setMenuOpen(false);
+        }}
+      >
+        <span className="mobile-contact-icon">
+          ◎
+        </span>
 
-                <span className="mobile-contact-arrow">
-                  ↗
-                </span>
-              </a>
+        <span className="mobile-contact-name">
+          Instagram
+        </span>
 
-              {/* WHATSAPP */}
+        <span className="mobile-contact-arrow">
+          ↗
+        </span>
+      </a>
 
-              <a
-                href="https://wa.me/96171523197"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mobile-contact-option"
-                onClick={() => {
-                  setMenuOpen(false);
-                  setContactOpen(false);
-                }}
-              >
-                <span className="mobile-contact-icon">
-                  ◌
-                </span>
 
-                <span className="mobile-contact-name">
-                  WhatsApp
-                </span>
+      <a
+        href="https://wa.me/96171523197"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mobile-contact-option"
+        onClick={() => {
+          setMobileContactOpen(false);
+          setMenuOpen(false);
+        }}
+      >
+        <span className="mobile-contact-icon">
+          ◌
+        </span>
 
-                <span className="mobile-contact-arrow">
-                  ↗
-                </span>
-              </a>
+        <span className="mobile-contact-name">
+          WhatsApp
+        </span>
 
-            </div>
-          )}
-        </div>
+        <span className="mobile-contact-arrow">
+          ↗
+        </span>
+      </a>
+
+    </div>
+  )}
+
+</div>
 
         {/* ==========================================
             MOBILE LANGUAGE
