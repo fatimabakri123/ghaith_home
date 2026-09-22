@@ -3,53 +3,116 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  User,
-  Store,
-  Languages,
   ArrowRight,
-  Sparkles,
+  ArrowUpRight,
+  Languages,
+  Menu,
+  X,
 } from "lucide-react";
 
 export default function ChooseRolePage() {
   const router = useRouter();
 
   const [language, setLanguage] = useState("en");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const isArabic = language === "ar";
 
   const content = {
     en: {
       brand: "GHAITH HOME",
-      smallText: "A beautiful beginning starts here",
-      title: "Welcome",
-      subtitle:
-        "Choose how you would like to continue and discover your perfect experience.",
-      customer: "Customer",
-      customerDesc:
-        "Browse beautiful products, discover collections, and find everything for your new home.",
+
+      nav: {
+        home: "Home",
+        collections: "Collections",
+        about: "About Us",
+        contact: "Contact",
+      },
+
+      smallText: "A HOME MADE FOR YOU",
+
+      title: (
+        <>
+          Everything
+          <br />
+          Your Home
+          <br />
+          <span>Needs.</span>
+        </>
+      ),
+
+      description:
+        "Discover beautiful pieces, thoughtful collections, and everything you need to create a home that feels truly yours.",
+
+      shop: "Shop Collection",
       owner: "Store Owner",
-      ownerDesc:
-        "Manage your products, collections, and store with ease.",
-      customerButton: "Enter Store",
-      ownerButton: "Manage Store",
+
+      stats: [
+        {
+          number: "50+",
+          label: "Beautiful Pieces",
+        },
+        {
+          number: "100%",
+          label: "Made for Homes",
+        },
+        {
+          number: "2026",
+          label: "Ghaith Home",
+        },
+      ],
+
       language: "العربية",
+
+      mobileMenu: "Menu",
     },
 
     ar: {
-      brand: "بيت العروس",
-      smallText: "بداية جميلة تبدأ من هنا",
-      title: "مرحباً بكِ",
-      subtitle:
-        "اختاري الطريقة التي تريدين المتابعة بها واكتشفي تجربتك المثالية.",
-      customer: "الزبون",
-      customerDesc:
-        "تصفحي المنتجات والمجموعات واكتشفي كل ما تحتاجينه لبيتك الجديد.",
+      brand: "بيت غيث",
+
+      nav: {
+        home: "الرئيسية",
+        collections: "المجموعات",
+        about: "من نحن",
+        contact: "تواصل معنا",
+      },
+
+      smallText: "بيت صُمّم ليشبهك",
+
+      title: (
+        <>
+          كل ما
+          <br />
+          يحتاجه
+          <br />
+          <span>بيتك.</span>
+        </>
+      ),
+
+      description:
+        "اكتشفي قطعاً جميلة ومجموعات مختارة بعناية وكل ما تحتاجينه لتصنعي بيتاً يشبهك فعلاً.",
+
+      shop: "تصفحي المجموعة",
       owner: "صاحب المتجر",
-      ownerDesc:
-        "إدارة المنتجات والمجموعات والمتجر الخاص بك بسهولة.",
-      customerButton: "دخول إلى المتجر",
-      ownerButton: "إدارة المتجر",
+
+      stats: [
+        {
+          number: "+50",
+          label: "قطعة مميزة",
+        },
+        {
+          number: "100%",
+          label: "لبيتك",
+        },
+        {
+          number: "2026",
+          label: "بيت غيث",
+        },
+      ],
+
       language: "English",
+
+      mobileMenu: "القائمة",
     },
   };
 
@@ -65,167 +128,298 @@ export default function ChooseRolePage() {
     }
   };
 
+  const handleNav = (section) => {
+    setMenuOpen(false);
+
+    // These are visual navigation items on the opening page.
+    // Your actual customer flow still starts with /home.
+    if (section === "home") {
+      router.push("/home");
+    }
+  };
+
   return (
     <main
       dir={isArabic ? "rtl" : "ltr"}
-      className="choose-role-page"
+      className="ghaith-landing"
     >
-      {/* Background decoration */}
-      <div className="choose-background">
-        <div className="glow glow-top" />
-        <div className="glow glow-left" />
-        <div className="glow glow-right" />
+      {/* =====================================================
+          HERO IMAGE
+      ===================================================== */}
 
-        <div className="decor-dot dot-one" />
-        <div className="decor-dot dot-two" />
-        <div className="decor-dot dot-three" />
-
-        <div className="decor-ring ring-one" />
-        <div className="decor-ring ring-two" />
+      <div className="ghaith-hero-image">
+        <div className="ghaith-image-overlay" />
+        <div className="ghaith-image-overlay-bottom" />
       </div>
 
-      <div className="choose-container">
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-        {/* TOP BAR */}
-        <div className="choose-topbar">
+      <header className="ghaith-header">
 
-          {/* BRAND */}
-          <div className="choose-brand">
+        {/* LOGO */}
 
-            <div className="brand-icon">
-              <Sparkles size={18} />
-            </div>
+        <button
+          type="button"
+          className="ghaith-logo"
+          onClick={() => handleNav("home")}
+        >
+          <span className="ghaith-logo-mark">
+            G
+          </span>
 
-            <div>
-              <p className="brand-name">
-                {t.brand}
-              </p>
+          <span className="ghaith-logo-text">
+            {t.brand}
+          </span>
+        </button>
 
-              <p className="brand-year">
-                EST. 2026
-              </p>
-            </div>
+        {/* DESKTOP NAV */}
 
-          </div>
+        <nav className="ghaith-nav">
 
-          {/* LANGUAGE */}
           <button
-            className="language-switch"
+            type="button"
+            className="nav-link active"
+            onClick={() => handleNav("home")}
+          >
+            {t.nav.home}
+          </button>
+
+          <button
+            type="button"
+            className="nav-link"
+            onClick={() => handleRole("customer")}
+          >
+            {t.nav.collections}
+          </button>
+
+          <button
+            type="button"
+            className="nav-link"
+          >
+            {t.nav.about}
+          </button>
+
+          <button
+            type="button"
+            className="nav-link"
+          >
+            {t.nav.contact}
+          </button>
+
+        </nav>
+
+        {/* RIGHT SIDE */}
+
+        <div className="ghaith-header-actions">
+
+          <button
+            type="button"
+            className="ghaith-language"
             onClick={() =>
               setLanguage(
                 language === "en" ? "ar" : "en"
               )
             }
           >
-            <Languages size={16} />
+            <Languages size={15} />
 
-            <span>{t.language}</span>
+            <span>
+              {t.language}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            className="ghaith-header-button"
+            onClick={() => handleRole("customer")}
+          >
+            {t.shop}
+
+            <ArrowUpRight size={14} />
           </button>
 
         </div>
 
-        {/* HERO */}
-        <section className="choose-hero">
+        {/* MOBILE MENU BUTTON */}
 
-          <div className="hero-small-text">
-            <span />
-            <p>{t.smallText}</p>
-            <span />
-          </div>
+        <button
+          type="button"
+          className="ghaith-mobile-menu-button"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={t.mobileMenu}
+        >
+          {menuOpen ? (
+            <X size={21} />
+          ) : (
+            <Menu size={21} />
+          )}
+        </button>
 
-          <h1>
-            {t.title}
-          </h1>
+      </header>
 
-          <div className="hero-star-line">
-            <span />
-            <b>✦</b>
-            <span />
-          </div>
 
-          <p className="hero-description">
-            {t.subtitle}
-          </p>
+      {/* =====================================================
+          MOBILE MENU
+      ===================================================== */}
 
-        </section>
+      <div
+        className={`ghaith-mobile-menu ${
+          menuOpen ? "open" : ""
+        }`}
+      >
 
-        {/* ROLE CARDS */}
-        <section className="role-cards">
+        <button
+          type="button"
+          onClick={() => handleNav("home")}
+        >
+          {t.nav.home}
+        </button>
 
-          {/* CUSTOMER */}
-          <button
-            className="role-card customer-card"
-            onClick={() => handleRole("customer")}
-          >
+        <button
+          type="button"
+          onClick={() => {
+            setMenuOpen(false);
+            handleRole("customer");
+          }}
+        >
+          {t.nav.collections}
+        </button>
 
-            <div className="card-glow" />
+        <button
+          type="button"
+          onClick={() => setMenuOpen(false)}
+        >
+          {t.nav.about}
+        </button>
 
-            <div className="role-icon">
-              <User
-                size={34}
-                strokeWidth={1.5}
-              />
-            </div>
+        <button
+          type="button"
+          onClick={() => setMenuOpen(false)}
+        >
+          {t.nav.contact}
+        </button>
 
-            <h2>
-              {t.customer}
-            </h2>
-
-            <p>
-              {t.customerDesc}
-            </p>
-
-            <div className="role-button">
-              <span>
-                {t.customerButton}
-              </span>
-
-              <ArrowRight size={15} />
-            </div>
-
-          </button>
-
-          {/* OWNER */}
-          <button
-            className="role-card owner-card"
-            onClick={() => handleRole("owner")}
-          >
-
-            <div className="card-glow owner-glow" />
-
-            <div className="role-icon owner-icon">
-              <Store
-                size={34}
-                strokeWidth={1.5}
-              />
-            </div>
-
-            <h2>
-              {t.owner}
-            </h2>
-
-            <p>
-              {t.ownerDesc}
-            </p>
-
-            <div className="role-button owner-button">
-              <span>
-                {t.ownerButton}
-              </span>
-
-              <ArrowRight size={15} />
-            </div>
-
-          </button>
-
-        </section>
-
-        {/* FOOTER */}
-        <footer className="choose-footer">
-          Made for beautiful beginnings
-        </footer>
+        <button
+          type="button"
+          onClick={() => {
+            setLanguage(
+              language === "en" ? "ar" : "en"
+            );
+            setMenuOpen(false);
+          }}
+        >
+          {t.language}
+        </button>
 
       </div>
+
+
+      {/* =====================================================
+          HERO CONTENT
+      ===================================================== */}
+
+      <section className="ghaith-hero-content">
+
+        <div className="ghaith-hero-inner">
+
+          {/* LEFT TEXT */}
+
+          <div className="ghaith-copy">
+
+            <div className="ghaith-eyebrow">
+              <span className="eyebrow-line" />
+
+              <span>
+                {t.smallText}
+              </span>
+            </div>
+
+            <h1 className="ghaith-title">
+              {t.title}
+            </h1>
+
+            <p className="ghaith-description">
+              {t.description}
+            </p>
+
+            {/* ACTIONS */}
+
+            <div className="ghaith-actions">
+
+              <button
+                type="button"
+                className="ghaith-primary-button"
+                onClick={() => handleRole("customer")}
+              >
+                <span>
+                  {t.shop}
+                </span>
+
+                <span className="button-icon">
+                  <ArrowRight size={17} />
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className="ghaith-secondary-button"
+                onClick={() => handleRole("owner")}
+              >
+                <span>
+                  {t.owner}
+                </span>
+
+                <ArrowUpRight size={16} />
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          BOTTOM STATS
+      ===================================================== */}
+
+      <div className="ghaith-bottom">
+
+        <div className="ghaith-stats">
+
+          {t.stats.map((stat, index) => (
+            <div
+              className="ghaith-stat"
+              key={index}
+            >
+              <strong>
+                {stat.number}
+              </strong>
+
+              <span>
+                {stat.label}
+              </span>
+            </div>
+          ))}
+
+        </div>
+
+        <div className="ghaith-scroll">
+          <span>
+            SCROLL TO EXPLORE
+          </span>
+
+          <div className="scroll-line">
+            <span />
+          </div>
+        </div>
+
+      </div>
+
     </main>
   );
 }

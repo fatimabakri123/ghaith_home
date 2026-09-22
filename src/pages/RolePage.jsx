@@ -1,4 +1,5 @@
-import "./role.css"
+
+import "./role.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,25 +12,45 @@ export default function RolePage() {
 
   const content = {
     en: {
-      brand: "GAITH HOME",
-      title: "Welcome",
-      subtitle: "Please choose how you want to continue",
-      customer: "Customer",
-      customerDesc: "Browse products and explore our store",
-      owner: "Owner",
-      ownerDesc: "Manage your products and store",
+      brand: "GHAITH HOME",
+      navHome: "Home",
+      navCollections: "Collections",
+      navAbout: "About",
       language: "العربية",
+
+      eyebrow: "YOUR HOME, YOUR STYLE",
+      title: "Everything Your Home Needs.",
+      description:
+        "Discover beautiful pieces and collections made to make your home feel truly yours.",
+
+      shop: "Shop Collection",
+      owner: "Store Owner",
+
+    
+
+      
     },
 
     ar: {
-      brand: "SMA",
-      title: "مرحباً",
-      subtitle: "يرجى اختيار طريقة المتابعة",
-      customer: "زبون",
-      customerDesc: "تصفح المنتجات واستكشف متجرنا",
-      owner: "صاحب المتجر",
-      ownerDesc: "إدارة المنتجات والمتجر الخاص بك",
+      brand: "غيث هوم",
+      navHome: "الرئيسية",
+      navCollections: "المجموعات",
+      navAbout: "من نحن",
       language: "English",
+
+      eyebrow: "بيتك، أسلوبك",
+      title: "كل ما يحتاجه بيتك.",
+      description:
+        "اكتشف قطعاً ومجموعات جميلة صُممت لتجعل منزلك يعكس ذوقك وشخصيتك.",
+
+      shop: "تصفح المجموعة",
+      owner: "صاحب المتجر",
+
+      scroll: "اكتشف المزيد",
+
+      statOne: "جودة",
+      statTwo: "مجموعات",
+      statThree: "مصممة للمنزل",
     },
   };
 
@@ -50,85 +71,97 @@ export default function RolePage() {
       dir={isArabic ? "rtl" : "ltr"}
       className="role-page"
     >
-      <div className="role-container">
+      {/* Background Image */}
+      <div className="hero-background">
+        <div className="hero-overlay"></div>
+      </div>
 
-        {/* Language */}
-        <div className="language-wrapper">
+      {/* Navigation */}
+      <nav className="role-navbar">
+        <div className="navbar-brand">
+          <span className="brand-main">GHAITH</span>
+          <span className="brand-sub">HOME</span>
+        </div>
+
+        <div className="navbar-links">
+          <button className="nav-link active">
+            {t.navHome}
+          </button>
+
           <button
-            onClick={() =>
-              setLanguage(language === "en" ? "ar" : "en")
-            }
-            className="language-button"
+            className="nav-link"
+            onClick={() => handleRole("customer")}
           >
-            🌐 {t.language}
+            {t.navCollections}
+          </button>
+
+          <button className="nav-link">
+            {t.navAbout}
           </button>
         </div>
 
-        {/* Header */}
-        <div className="role-header">
+        <button
+          className="language-button"
+          onClick={() =>
+            setLanguage(language === "en" ? "ar" : "en")
+          }
+        >
+          <span className="language-icon">◎</span>
+          {t.language}
+        </button>
+      </nav>
 
-          <h2 className="brand-name">
-            {t.brand}
-          </h2>
+      {/* Hero */}
+      <section className="role-hero">
+        <div className="hero-content">
 
-          <div className="brand-line"></div>
+          <p className="hero-eyebrow">
+            <span className="eyebrow-line"></span>
+            {t.eyebrow}
+          </p>
 
-          <h1 className="role-title">
+          <h1 className="hero-title">
             {t.title}
           </h1>
 
-          <p className="role-subtitle">
-            {t.subtitle}
+          <p className="hero-description">
+            {t.description}
           </p>
 
+          <div className="hero-actions">
+
+            <button
+              className="primary-button"
+              onClick={() => handleRole("customer")}
+            >
+              <span>{t.shop}</span>
+              <span className="button-arrow">
+                {isArabic ? "←" : "→"}
+              </span>
+            </button>
+
+            <button
+              className="secondary-button"
+              onClick={() => handleRole("owner")}
+            >
+              {t.owner}
+            </button>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Bottom Information */}
+      <div className="hero-bottom">
+
+        <div className="scroll-indicator">
+          <span className="scroll-line"></span>
+          <span>{t.scroll}</span>
         </div>
 
-        {/* Cards */}
-        <div className="role-cards">
+        <div className="hero-stats">
 
-          {/* Customer */}
-          <button
-            onClick={() => handleRole("customer")}
-            className="role-card"
-          >
-            <div className="role-icon">
-              🛍️
-            </div>
-
-            <h2 className="role-card-title">
-              {t.customer}
-            </h2>
-
-            <p className="role-card-description">
-              {t.customerDesc}
-            </p>
-
-            <div className="role-arrow">
-              →
-            </div>
-          </button>
-
-          {/* Owner */}
-          <button
-            onClick={() => handleRole("owner")}
-            className="role-card"
-          >
-            <div className="role-icon">
-              🏪
-            </div>
-
-            <h2 className="role-card-title">
-              {t.owner}
-            </h2>
-
-            <p className="role-card-description">
-              {t.ownerDesc}
-            </p>
-
-            <div className="role-arrow">
-              →
-            </div>
-          </button>
+          
 
         </div>
       </div>

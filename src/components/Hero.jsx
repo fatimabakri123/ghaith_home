@@ -24,7 +24,7 @@ function Hero() {
 
       <div className="hero-image">
         <img
-          src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=80"
+          src="/image/ghaith-home-hero.jpg"
           alt="Beautiful kitchen"
         />
       </div>
