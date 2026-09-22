@@ -354,12 +354,16 @@ function Navbar() {
 
         {/* MOBILE CONTACT */}
 
+{/* MOBILE CONTACT */}
+
 <div className="mobile-contact-section">
 
   <button
     type="button"
     className="mobile-contact-btn"
-    onClick={() => setContactOpen((prev) => !prev)}
+    onClick={() => {
+      setContactOpen((prev) => !prev);
+    }}
   >
     <span>Contact Us</span>
 
@@ -368,50 +372,53 @@ function Navbar() {
     </span>
   </button>
 
+
   {contactOpen && (
     <div className="mobile-contact-options">
 
       {/* INSTAGRAM */}
       <button
         type="button"
+        className="mobile-contact-option"
         onClick={() => {
-          window.open(
-            "https://www.instagram.com/ghaith._.home/",
-            "_blank",
-            "noopener,noreferrer"
-          );
-
-          setContactOpen(false);
-          setMenuOpen(false);
+          window.location.href =
+            "https://www.instagram.com/ghaith._.home/";
         }}
       >
-        <span>◎</span>
+        <span className="contact-mobile-icon">
+          ◎
+        </span>
 
-        <span>Instagram</span>
+        <span className="contact-mobile-name">
+          Instagram
+        </span>
 
-        <span>↗</span>
+        <span className="contact-mobile-arrow">
+          ↗
+        </span>
       </button>
 
 
       {/* WHATSAPP */}
       <button
         type="button"
+        className="mobile-contact-option"
         onClick={() => {
-          window.open(
-            "https://wa.me/96171523197",
-            "_blank",
-            "noopener,noreferrer"
-          );
-
-          setContactOpen(false);
-          setMenuOpen(false);
+          window.location.href =
+            "https://wa.me/96171523197";
         }}
       >
-        <span>◌</span>
+        <span className="contact-mobile-icon">
+          ◌
+        </span>
 
-        <span>WhatsApp</span>
+        <span className="contact-mobile-name">
+          WhatsApp
+        </span>
 
-        <span>↗</span>
+        <span className="contact-mobile-arrow">
+          ↗
+        </span>
       </button>
 
     </div>
