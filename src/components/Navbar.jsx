@@ -356,73 +356,31 @@ function Navbar() {
 
 {/* MOBILE CONTACT */}
 
-<div className="mobile-contact-section">
+<div className="mobile-contact-options">
 
   <button
     type="button"
-    className="mobile-contact-btn"
     onClick={() => {
-      setContactOpen((prev) => !prev);
+      alert("INSTAGRAM CLICKED");
+      window.location.assign(
+        "https://www.instagram.com/ghaith._.home/"
+      );
     }}
   >
-    <span>Contact Us</span>
-
-    <span>
-      {contactOpen ? "↑" : "↓"}
-    </span>
+    Instagram
   </button>
 
-
-  {contactOpen && (
-    <div className="mobile-contact-options">
-
-      {/* INSTAGRAM */}
-      <button
-        type="button"
-        className="mobile-contact-option"
-        onClick={() => {
-          window.location.href =
-            "https://www.instagram.com/ghaith._.home/";
-        }}
-      >
-        <span className="contact-mobile-icon">
-          ◎
-        </span>
-
-        <span className="contact-mobile-name">
-          Instagram
-        </span>
-
-        <span className="contact-mobile-arrow">
-          ↗
-        </span>
-      </button>
-
-
-      {/* WHATSAPP */}
-      <button
-        type="button"
-        className="mobile-contact-option"
-        onClick={() => {
-          window.location.href =
-            "https://wa.me/96171523197";
-        }}
-      >
-        <span className="contact-mobile-icon">
-          ◌
-        </span>
-
-        <span className="contact-mobile-name">
-          WhatsApp
-        </span>
-
-        <span className="contact-mobile-arrow">
-          ↗
-        </span>
-      </button>
-
-    </div>
-  )}
+  <button
+    type="button"
+    onClick={() => {
+      alert("WHATSAPP CLICKED");
+      window.location.assign(
+        "https://wa.me/96171523197"
+      );
+    }}
+  >
+    WhatsApp
+  </button>
 
 </div>
 
