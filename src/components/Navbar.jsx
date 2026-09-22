@@ -352,72 +352,72 @@ function Navbar() {
 
         {/* MOBILE CONTACT */}
 
-        <div className="mobile-contact-section">
+        {/* MOBILE CONTACT */}
 
-          <button
-            type="button"
-            className="mobile-contact-btn"
-            onClick={() =>
-              setContactOpen((prev) => !prev)
-            }
-          >
-            <span>
-              Contact Us
-            </span>
+<div className="mobile-contact-section">
 
-            <span>
-              {contactOpen ? "↑" : "↓"}
-            </span>
-          </button>
+  <button
+    type="button"
+    className="mobile-contact-btn"
+    onClick={() => setContactOpen((prev) => !prev)}
+  >
+    <span>Contact Us</span>
+
+    <span>
+      {contactOpen ? "↑" : "↓"}
+    </span>
+  </button>
+
+  {contactOpen && (
+    <div className="mobile-contact-options">
+
+      {/* INSTAGRAM */}
+      <button
+        type="button"
+        onClick={() => {
+          window.open(
+            "https://www.instagram.com/ghaith._.home/",
+            "_blank",
+            "noopener,noreferrer"
+          );
+
+          setContactOpen(false);
+          setMenuOpen(false);
+        }}
+      >
+        <span>◎</span>
+
+        <span>Instagram</span>
+
+        <span>↗</span>
+      </button>
 
 
-          {contactOpen && (
-            <div className="mobile-contact-options">
+      {/* WHATSAPP */}
+      <button
+        type="button"
+        onClick={() => {
+          window.open(
+            "https://wa.me/96171523197",
+            "_blank",
+            "noopener,noreferrer"
+          );
 
-              <a
-                href="https://www.instagram.com/ghaith._.home?stkn=djd6MHg4bXE4N3h3"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={closeMenu}
-              >
-                <span>
-                  ◎
-                </span>
+          setContactOpen(false);
+          setMenuOpen(false);
+        }}
+      >
+        <span>◌</span>
 
-                <span>
-                  Instagram
-                </span>
+        <span>WhatsApp</span>
 
-                <span>
-                  ↗
-                </span>
-              </a>
+        <span>↗</span>
+      </button>
 
+    </div>
+  )}
 
-              <a
-                href="https://wa.me/96171523197"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={closeMenu}
-              >
-                <span>
-                  ◌
-                </span>
-
-                <span>
-                  WhatsApp
-                </span>
-
-                <span>
-                  ↗
-                </span>
-              </a>
-
-            </div>
-          )}
-
-        </div>
-
+</div>
 
         {/* MOBILE LANGUAGE */}
 
