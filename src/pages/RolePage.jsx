@@ -1,4 +1,4 @@
-import "./role.css"
+import "./role.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,25 +11,33 @@ export default function RolePage() {
 
   const content = {
     en: {
-      brand: "",
-      title: "Welcome",
-      subtitle: "Please choose how you want to continue",
+      brand: "GHAITH HOME",
+      smallBrand: "HOME COLLECTION",
+      title: "Welcome to Ghaith Home",
+      subtitle: "Everything you need to make your home feel like home.",
+      choose: "Continue as",
       customer: "Customer",
-      customerDesc: "Browse products and explore our store",
+      customerDesc: "Explore our collection",
       owner: "Owner",
-      ownerDesc: "Manage your products and store",
+      ownerDesc: "Manage your store",
       language: "العربية",
+      discover: "DISCOVER",
+      manage: "MANAGE",
     },
 
     ar: {
-      brand: "SMA",
-      title: "مرحباً",
-      subtitle: "يرجى اختيار طريقة المتابعة",
+      brand: "غيث هوم",
+      smallBrand: "مجموعة المنزل",
+      title: "مرحباً بك في غيث هوم",
+      subtitle: "كل ما تحتاجه لتجعل منزلك أكثر دفئاً وأناقة.",
+      choose: "المتابعة كـ",
       customer: "زبون",
-      customerDesc: "تصفح المنتجات واستكشف متجرنا",
+      customerDesc: "اكتشف مجموعتنا",
       owner: "صاحب المتجر",
-      ownerDesc: "إدارة المنتجات والمتجر الخاص بك",
+      ownerDesc: "إدارة المتجر",
       language: "English",
+      discover: "اكتشف",
+      manage: "إدارة",
     },
   };
 
@@ -47,92 +55,188 @@ export default function RolePage() {
 
   return (
     <main
-      dir={isArabic ? "rtl" : "ltr"}
       className="role-page"
+      dir={isArabic ? "rtl" : "ltr"}
     >
-      <div className="role-container">
+      {/* ==========================================
+          BACKGROUND
+      ========================================== */}
 
-        {/* Language */}
-        <div className="language-wrapper">
-          <button
-            onClick={() =>
-              setLanguage(language === "en" ? "ar" : "en")
-            }
-            className="language-button"
-          >
-            🌐 {t.language}
-          </button>
+      <div className="role-background">
+        <div className="role-background-image" />
+        <div className="role-overlay" />
+      </div>
+
+      {/* ==========================================
+          TOP BAR
+      ========================================== */}
+
+      <header className="role-topbar">
+
+        <div className="role-mini-brand">
+          <span>{t.brand}</span>
+          <small>{t.smallBrand}</small>
         </div>
 
-        {/* Header */}
-        <div className="role-header">
+        <button
+          type="button"
+          className="role-language"
+          onClick={() =>
+            setLanguage(
+              language === "en" ? "ar" : "en"
+            )
+          }
+        >
+          <span>◎</span>
+          {t.language}
+        </button>
 
-          <h2 className="brand-name">
-            {t.brand}
+      </header>
+
+      {/* ==========================================
+          MAIN CONTENT
+      ========================================== */}
+
+      <div className="role-content">
+
+        {/* BRAND */}
+
+        <div className="role-brand">
+
+          <span className="role-brand-small">
+            EST. 2026
+          </span>
+
+          <h1>{t.brand}</h1>
+
+          <div className="role-brand-line">
+            <span></span>
+            <i>✦</i>
+            <span></span>
+          </div>
+
+          <p>{t.smallBrand}</p>
+
+        </div>
+
+        {/* TITLE */}
+
+        <div className="role-heading">
+
+          <span className="role-eyebrow">
+            {t.choose}
+          </span>
+
+          <h2>
+            {t.title}
           </h2>
 
-          <div className="brand-line"></div>
-
-          <h1 className="role-title">
-            {t.title}
-          </h1>
-
-          <p className="role-subtitle">
+          <p>
             {t.subtitle}
           </p>
 
         </div>
 
-        {/* Cards */}
-        <div className="role-cards">
+        {/* ==========================================
+            ROLE OPTIONS
+        ========================================== */}
 
-          {/* Customer */}
+        <div className="role-options">
+
+          {/* CUSTOMER */}
+
           <button
+            type="button"
+            className="role-option"
             onClick={() => handleRole("customer")}
-            className="role-card"
           >
-            <div className="role-icon">
-              🛍️
+            <div className="role-option-top">
+              <span className="role-option-number">
+                01
+              </span>
+
+              <span className="role-option-label">
+                {t.discover}
+              </span>
             </div>
 
-            <h2 className="role-card-title">
-              {t.customer}
-            </h2>
+            <div className="role-option-main">
 
-            <p className="role-card-description">
-              {t.customerDesc}
-            </p>
+              <div>
+                <h3>{t.customer}</h3>
 
-            <div className="role-arrow">
-              →
+                <p>
+                  {t.customerDesc}
+                </p>
+              </div>
+
+              <span className="role-option-arrow">
+                ↗
+              </span>
+
             </div>
           </button>
 
-          {/* Owner */}
+          {/* OWNER */}
+
           <button
+            type="button"
+            className="role-option"
             onClick={() => handleRole("owner")}
-            className="role-card"
           >
-            <div className="role-icon">
-              🏪
+            <div className="role-option-top">
+              <span className="role-option-number">
+                02
+              </span>
+
+              <span className="role-option-label">
+                {t.manage}
+              </span>
             </div>
 
-            <h2 className="role-card-title">
-              {t.owner}
-            </h2>
+            <div className="role-option-main">
 
-            <p className="role-card-description">
-              {t.ownerDesc}
-            </p>
+              <div>
+                <h3>{t.owner}</h3>
 
-            <div className="role-arrow">
-              →
+                <p>
+                  {t.ownerDesc}
+                </p>
+              </div>
+
+              <span className="role-option-arrow">
+                ↗
+              </span>
+
             </div>
           </button>
 
         </div>
+
       </div>
+
+      {/* ==========================================
+          FOOTER
+      ========================================== */}
+
+      <footer className="role-footer">
+
+        <span>
+          GHAITH HOME
+        </span>
+
+        <span>
+          {isArabic
+            ? "منزلك يبدأ من هنا"
+            : "YOUR HOME STARTS HERE"}
+        </span>
+
+        <span>
+          © 2026
+        </span>
+
+      </footer>
+
     </main>
   );
 }
-
