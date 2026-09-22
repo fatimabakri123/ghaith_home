@@ -1,0 +1,1106 @@
+/* =========================================================
+   GHAITH HOME NAVBAR
+   Complete Mobile + Desktop CSS
+========================================================= */
+
+.navbar {
+  width: 100%;
+  position: relative;
+  z-index: 1000;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #eee4da;
+
+  color: #806b57;
+
+  font-family:
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.navbar-container {
+  width: 100%;
+  height: 105px;
+
+  padding: 0 55px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo {
+  display: flex;
+  align-items: center;
+
+  text-decoration: none;
+
+  flex-shrink: 0;
+}
+
+.logo-image {
+  width: 175px;
+  height: auto;
+
+  display: block;
+
+  object-fit: contain;
+}
+
+
+/* =========================================================
+   DESKTOP LINKS
+========================================================= */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+
+  gap: 42px;
+
+  margin-left: auto;
+  margin-right: 45px;
+}
+
+.nav-links > a,
+.contact-btn {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 10px 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #806b57;
+
+  text-decoration: none;
+
+  font-family: inherit;
+
+  font-size: 15px;
+
+  font-weight: 500;
+
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition: color 0.25s ease;
+}
+
+.nav-links > a::after,
+.contact-btn::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: 3px;
+
+  width: 0;
+  height: 1px;
+
+  background: #bda27f;
+
+  transition: width 0.3s ease;
+}
+
+.nav-links > a:hover,
+.contact-btn:hover {
+  color: #a08364;
+}
+
+.nav-links > a:hover::after,
+.contact-btn:hover::after,
+.contact-btn.active::after {
+  width: 100%;
+}
+
+
+/* =========================================================
+   CHECKLIST COUNT
+========================================================= */
+
+.desktop-list-count {
+  min-width: 19px;
+  height: 19px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-left: 5px;
+
+  border-radius: 50%;
+
+  background: #b49a82;
+
+  color: #ffffff;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   CONTACT
+========================================================= */
+
+.contact-wrapper {
+  position: relative;
+}
+
+.contact-btn {
+  appearance: none;
+}
+
+.contact-chevron {
+  font-size: 12px;
+
+  transition: transform 0.3s ease;
+}
+
+.contact-chevron.rotate {
+  transform: rotate(180deg);
+}
+
+
+/* =========================================================
+   CONTACT DROPDOWN
+========================================================= */
+
+.contact-dropdown {
+  position: absolute;
+
+  top: calc(100% + 18px);
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 335px;
+
+  padding: 10px;
+
+  background: #ffffff;
+
+  border: 1px solid #e4d8cb;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 20px 55px rgba(100, 75, 50, 0.13);
+
+  animation: contactDropdown 0.22s ease forwards;
+}
+
+@keyframes contactDropdown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+
+/* dropdown header */
+
+.contact-dropdown-header {
+  padding: 18px 17px 14px;
+
+  border-bottom: 1px solid #eee5dc;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.contact-small-label {
+  font-size: 9px;
+
+  letter-spacing: 2px;
+
+  color: #b49a82;
+}
+
+.contact-title {
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 17px;
+
+  color: #806b57;
+}
+
+
+/* contact options */
+
+.contact-option {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  width: 100%;
+
+  padding: 14px 12px;
+
+  margin-top: 5px;
+
+  border-radius: 12px;
+
+  text-decoration: none;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.contact-option:hover {
+  background: #faf6f1;
+
+  transform: translateX(3px);
+}
+
+.contact-option-icon {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f3ebe2;
+
+  color: #9a8068;
+
+  font-size: 17px;
+}
+
+.contact-option-content {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.contact-option-content strong {
+  color: #806b57;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.contact-option-content small {
+  color: #aa9887;
+
+  font-size: 11px;
+}
+
+.contact-option-arrow {
+  color: #b49a82;
+
+  font-size: 17px;
+}
+
+
+/* =========================================================
+   RIGHT ACTIONS
+========================================================= */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  flex-shrink: 0;
+}
+
+
+/* language */
+
+.language-btn {
+  height: 47px;
+
+  min-width: 115px;
+
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 1px solid #ddd0c2;
+
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  color: #806b57;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.language-btn:hover {
+  background: #faf6f1;
+
+  border-color: #c9b39b;
+
+  transform: translateY(-1px);
+}
+
+.language-symbol {
+  font-size: 15px;
+}
+
+
+/* =========================================================
+   BRIDAL LIST
+========================================================= */
+
+.cart-btn {
+  position: relative;
+
+  width: 47px;
+  height: 47px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #ddd0c2;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #806b57;
+
+  text-decoration: none;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.cart-btn:hover {
+  background: #faf6f1;
+
+  border-color: #c9b39b;
+
+  transform: translateY(-1px);
+}
+
+.cart-icon {
+  font-size: 23px;
+
+  line-height: 1;
+}
+
+.cart-count {
+  position: absolute;
+
+  top: -4px;
+  right: -3px;
+
+  min-width: 19px;
+  height: 19px;
+
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #b49a82;
+
+  color: white;
+
+  font-size: 9px;
+
+  border: 2px solid white;
+}
+
+
+/* =========================================================
+   MOBILE MENU BUTTON
+========================================================= */
+
+.mobile-menu-btn {
+  display: none;
+
+  border: none;
+
+  background: transparent;
+
+  color: #806b57;
+
+  cursor: pointer;
+}
+
+.menu-icon {
+  font-size: 29px;
+
+  line-height: 1;
+}
+
+.close-icon {
+  font-size: 34px;
+}
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+.mobile-menu {
+  display: none;
+}
+
+
+/* =========================================================
+   RTL DESKTOP
+========================================================= */
+
+.navbar[dir="rtl"] .nav-links {
+  margin-left: 45px;
+  margin-right: auto;
+}
+
+.navbar[dir="rtl"] .contact-dropdown {
+  direction: rtl;
+}
+
+.navbar[dir="rtl"] .contact-option {
+  direction: rtl;
+}
+
+.navbar[dir="rtl"] .contact-option-arrow {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.navbar[dir="rtl"] .contact-option:hover {
+  transform: translateX(-3px);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .navbar-container {
+    height: 92px;
+
+    padding: 0 28px;
+  }
+
+  .logo-image {
+    width: 145px;
+  }
+
+  .nav-links {
+    gap: 22px;
+
+    margin-right: 25px;
+  }
+
+  .navbar[dir="rtl"] .nav-links {
+    margin-left: 25px;
+    margin-right: auto;
+  }
+
+  .nav-links > a,
+  .contact-btn {
+    font-size: 13px;
+  }
+
+  .language-btn {
+    min-width: 100px;
+    height: 43px;
+  }
+
+  .cart-btn {
+    width: 43px;
+    height: 43px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .navbar {
+    width: 100%;
+
+    position: relative;
+
+    background: #ffffff;
+
+    z-index: 1000;
+  }
+
+
+  /* -----------------------------
+     NAVBAR TOP
+  ----------------------------- */
+
+  .navbar-container {
+    width: 100%;
+
+    height: 78px;
+
+    padding: 0 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    box-sizing: border-box;
+  }
+
+
+  /* logo */
+
+  .logo {
+    flex: 0 0 auto;
+
+    max-width: 145px;
+  }
+
+  .logo-image {
+    width: 135px;
+
+    max-width: 100%;
+
+    height: auto;
+  }
+
+
+  /* hide desktop links */
+
+  .nav-links {
+    display: none;
+  }
+
+
+  /* actions */
+
+  .nav-actions {
+    margin-left: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+  }
+
+
+  /* language */
+
+  .language-btn {
+    min-width: 82px;
+
+    height: 40px;
+
+    padding: 0 10px;
+
+    gap: 5px;
+
+    font-size: 10px;
+  }
+
+  .language-symbol {
+    font-size: 13px;
+  }
+
+
+  /* bridal list */
+
+  .cart-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cart-icon {
+    font-size: 21px;
+  }
+
+
+  /* hamburger */
+
+  .mobile-menu-btn {
+    width: 40px;
+    height: 40px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #ddd0c2;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    color: #806b57;
+  }
+
+  .menu-icon {
+    font-size: 23px;
+  }
+
+  .close-icon {
+    font-size: 28px;
+  }
+
+
+  /* =======================================================
+     MOBILE MENU PANEL
+  ======================================================= */
+
+  .mobile-menu {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    display: none;
+
+    flex-direction: column;
+
+    padding: 8px 20px 24px;
+
+    background:
+      linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #faf6f1 100%
+      );
+
+    border-top: 1px solid #eee4da;
+
+    box-shadow:
+      0 18px 35px rgba(100, 75, 50, 0.08);
+
+    position: relative;
+
+    z-index: 999;
+  }
+
+
+  .mobile-menu.open {
+    display: flex;
+
+    animation: mobileMenuOpen 0.22s ease forwards;
+  }
+
+
+  @keyframes mobileMenuOpen {
+    from {
+      opacity: 0;
+
+      transform: translateY(-7px);
+    }
+
+    to {
+      opacity: 1;
+
+      transform: translateY(0);
+    }
+  }
+
+
+  /* =======================================================
+     MOBILE MENU MAIN LINKS
+  ======================================================= */
+
+  .mobile-menu > a {
+    width: 100%;
+
+    min-height: 58px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 4px;
+
+    border-bottom: 1px solid #e9dfd5;
+
+    color: #806b57;
+
+    text-decoration: none;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    transition:
+      padding 0.25s ease,
+      color 0.25s ease;
+  }
+
+
+  .mobile-menu > a:hover {
+    color: #a08364;
+
+    padding-left: 8px;
+  }
+
+
+  .mobile-arrow {
+    color: #b49a82;
+
+    font-size: 17px;
+  }
+
+
+  /* checklist */
+
+  .mobile-checklist-name {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+  }
+
+  .mobile-list-count {
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 4px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #b49a82;
+
+    color: white;
+
+    font-size: 9px;
+  }
+
+
+  /* =======================================================
+     MOBILE CONTACT
+  ======================================================= */
+
+  .mobile-contact-section {
+    width: 100%;
+
+    border-bottom: 1px solid #e9dfd5;
+  }
+
+
+  .mobile-contact-btn {
+    width: 100%;
+
+    min-height: 58px;
+
+    padding: 0 4px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border: none;
+
+    background: transparent;
+
+    color: #806b57;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+  }
+
+
+  /* =======================================================
+     MOBILE CONTACT OPTIONS
+  ======================================================= */
+
+  .mobile-contact-options {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    padding:
+      4px
+      0
+      14px;
+  }
+
+
+  .mobile-contact-options a {
+    width: 100%;
+
+    min-height: 54px;
+
+    box-sizing: border-box;
+
+    display: flex !important;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 9px 13px;
+
+    border: 1px solid #e3d6c8;
+
+    border-radius: 13px;
+
+    background: #ffffff;
+
+    color: #806b57 !important;
+
+    text-decoration: none !important;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    position: relative;
+
+    z-index: 10;
+
+    pointer-events: auto;
+
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+
+  .mobile-contact-options a:active {
+    background: #f7f0e8;
+
+    border-color: #cbb69e;
+  }
+
+
+  .mobile-contact-options a span:first-child {
+    width: 32px;
+    height: 32px;
+
+    flex: 0 0 32px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f3ebe2;
+
+    color: #9a8068;
+
+    font-size: 15px;
+  }
+
+
+  .mobile-contact-options a span:nth-child(2) {
+    flex: 1;
+
+    color: #806b57 !important;
+
+    text-align: left;
+  }
+
+
+  .mobile-contact-options a span:last-child {
+    flex: 0 0 auto;
+
+    color: #b49a82;
+
+    font-size: 16px;
+  }
+
+
+  /* =======================================================
+     MOBILE LANGUAGE
+  ======================================================= */
+
+  .mobile-language-btn {
+    width: 100%;
+
+    min-height: 56px;
+
+    padding: 0 4px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border: none;
+
+    background: transparent;
+
+    color: #806b57;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    cursor: pointer;
+  }
+
+
+  /* =======================================================
+     RTL MOBILE
+  ======================================================= */
+
+  .navbar[dir="rtl"] .mobile-menu {
+    direction: rtl;
+  }
+
+  .navbar[dir="rtl"] .mobile-menu > a:hover {
+    padding-left: 4px;
+    padding-right: 8px;
+  }
+
+  .navbar[dir="rtl"] .mobile-contact-options a {
+    direction: rtl;
+  }
+
+  .navbar[dir="rtl"] .mobile-contact-options a span:nth-child(2) {
+    text-align: right;
+  }
+
+  .navbar[dir="rtl"] .mobile-contact-options a span:last-child {
+    margin-left: 0;
+    margin-right: auto;
+  }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .navbar-container {
+    padding: 0 12px;
+  }
+
+  .logo-image {
+    width: 118px;
+  }
+
+  .nav-actions {
+    gap: 5px;
+  }
+
+  .language-btn {
+    min-width: 72px;
+
+    padding: 0 7px;
+
+    font-size: 9px;
+  }
+
+  .cart-btn,
+  .mobile-menu-btn {
+    width: 37px;
+    height: 37px;
+  }
+
+  .cart-icon {
+    font-size: 19px;
+  }
+}

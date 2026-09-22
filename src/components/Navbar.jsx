@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useBridalList } from "../context/BridalListContext";
-
+import "./navbar.css";
 function Navbar() {
   const { list } = useBridalList();
   const { language, toggleLanguage, t } = useLanguage();
