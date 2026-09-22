@@ -206,7 +206,179 @@ select {
 /* =========================================================
    CONTACT US
 ========================================================= */
+/* =========================================================
+   MOBILE CONTACT LINKS — FIX
+========================================================= */
 
+@media (max-width: 700px) {
+
+  .mobile-contact-section {
+    width: 100%;
+    display: block;
+  }
+
+  .mobile-contact-btn {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 0;
+
+    border: none;
+    border-top: 1px solid #e8ddd1;
+
+    background: transparent;
+
+    color: #806b57;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+
+    cursor: pointer;
+  }
+
+
+  /* IMPORTANT:
+     Contact options must be visible and clickable
+  */
+
+  .mobile-contact-options {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 4px 0 10px;
+
+    background: transparent;
+
+    position: relative;
+    z-index: 20;
+  }
+
+
+  .mobile-contact-options a {
+    width: 100%;
+
+    min-height: 52px;
+
+    display: flex !important;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 14px;
+
+    padding: 12px 14px;
+
+    margin: 3px 0;
+
+    box-sizing: border-box;
+
+    text-decoration: none;
+
+    color: #806b57 !important;
+
+    background: #ffffff;
+
+    border: 1px solid #e8ddd1;
+
+    border-radius: 12px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    position: relative;
+    z-index: 30;
+
+    pointer-events: auto;
+
+    transition:
+      background 0.25s ease,
+      border-color 0.25s ease,
+      transform 0.25s ease;
+  }
+
+
+  .mobile-contact-options a:hover {
+    background: #faf6f1;
+
+    border-color: #d8c8b6;
+  }
+
+
+  .mobile-contact-options a:active {
+    transform: scale(0.98);
+  }
+
+
+  /* icon */
+
+  .mobile-contact-options a span:first-child {
+    width: 32px;
+    height: 32px;
+
+    flex: 0 0 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f3ebe2;
+
+    color: #9a8068;
+
+    font-size: 15px;
+  }
+
+
+  /* name */
+
+  .mobile-contact-options a span:nth-child(2) {
+    flex: 1;
+
+    text-align: left;
+
+    color: #806b57;
+
+    font-weight: 500;
+  }
+
+
+  /* arrow */
+
+  .mobile-contact-options a span:last-child {
+    margin-left: auto;
+
+    color: #b49a82;
+
+    font-size: 16px;
+  }
+
+
+  /* Arabic */
+
+  .navbar[dir="rtl"] .mobile-contact-options a {
+    direction: rtl;
+  }
+
+  .navbar[dir="rtl"] .mobile-contact-options a span:nth-child(2) {
+    text-align: right;
+  }
+
+  .navbar[dir="rtl"] .mobile-contact-options a span:last-child {
+    margin-left: 0;
+    margin-right: auto;
+  }
+}
 .contact-wrapper {
   position: relative;
 
@@ -3582,15 +3754,6 @@ select {
 /* =====================================================
    ROLE PAGE
 ===================================================== */
-/* =========================================================
-   GHAITH HOME
-   MODERN HOME LANDING PAGE
-========================================================= */
-/* =========================================================
-   GHAITH HOME
-   BEIGE + WHITE ONLY
-   NO BLACK
-========================================================= */
 
 :root {
   --beige-main: #f4ede4;
