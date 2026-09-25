@@ -9,8 +9,7 @@ function AddProduct() {
   const [subcategories, setSubcategories] = useState([]);
 
   const [loading, setLoading] = useState(false);
-  const [loadingCategories, setLoadingCategories] =
-    useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
   const [error, setError] = useState("");
 
@@ -172,14 +171,9 @@ function AddProduct() {
       .order("name_en");
 
     if (error) {
-      console.error(
-        "Categories error:",
-        error
-      );
+      console.error("Categories error:", error);
 
-      setError(
-        "Could not load categories."
-      );
+      setError("Could not load categories.");
     } else {
       setCategories(data || []);
     }
@@ -226,12 +220,11 @@ function AddProduct() {
       return;
     }
 
-    const selectedCategory =
-      categories.find(
-        (category) =>
-          String(category.id) ===
-          String(categoryId)
-      );
+    const selectedCategory = categories.find(
+      (category) =>
+        String(category.id) ===
+        String(categoryId)
+    );
 
     if (!selectedCategory) {
       setSubcategories([]);
@@ -309,19 +302,6 @@ function AddProduct() {
     if (!form.category_id) {
       setError(
         "Please select a category."
-      );
-
-      setLoading(false);
-      return;
-    }
-
-    // ==========================================
-    // VALIDATE SUBCATEGORY
-    // ==========================================
-
-    if (!form.subcategory) {
-      setError(
-        "Please select a subcategory."
       );
 
       setLoading(false);
@@ -433,8 +413,10 @@ function AddProduct() {
           category_id:
             Number(form.category_id),
 
+          // SUBCATEGORY IS OPTIONAL
+          // Empty value becomes NULL
           subcategory:
-            form.subcategory,
+            form.subcategory || null,
 
           // FIRST IMAGE = MAIN IMAGE
           image_url:
@@ -581,7 +563,9 @@ function AddProduct() {
               onChange={
                 handleImageChange
               }
-              required={images.length === 0}
+              required={
+                images.length === 0
+              }
             />
 
             {/* IMAGE PREVIEWS */}
@@ -853,10 +837,12 @@ function AddProduct() {
 
             )}
 
-            {/* SUBCATEGORY */}
+            {/* ======================================
+                OPTIONAL SUBCATEGORY
+                ====================================== */}
 
             <label>
-              Subcategory
+              Subcategory (Optional)
             </label>
 
             <select
@@ -871,7 +857,6 @@ function AddProduct() {
                 !form.category_id ||
                 subcategories.length === 0
               }
-              required
             >
 
               <option value="">
@@ -879,8 +864,8 @@ function AddProduct() {
                 {!form.category_id
                   ? "Select category first"
                   : subcategories.length === 0
-                  ? "No subcategories"
-                  : "Select subcategory"}
+                  ? "No subcategories available"
+                  : "Select subcategory (Optional)"}
 
               </option>
 
